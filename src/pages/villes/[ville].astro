@@ -1,0 +1,645 @@
+---
+// src/pages/villes/[ville].astro et src/pages/villes/premium/[ville].astro
+// Note: Ce template peut être utilisé pour les deux types de pages de ville
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+// Fonction pour générer les chemins statiques
+export async function getStaticPaths() {
+  const allVilles = await getCollection('villes');
+  
+  return allVilles.map(ville => {
+    return {
+      params: { ville: ville.slug },
+      props: { ville, isPremium: false }
+    };
+  });
+}
+
+// Props
+const { ville, isPremium } = Astro.props;
+const { Content } = await ville.render();
+
+// Récupérer les services
+const services = await getCollection('services');
+const sortedServices = services.sort((a, b) => (a.data.order || 0) - (b.data.order || 0));
+
+// Récupérer des villes proches (exemple simple - à personnaliser selon besoin)
+const allVilles = await getCollection(isPremium ? 'villes/premium' : 'villes');
+const nearbyVilles = allVilles
+  .filter(v => v.slug !== ville.slug)
+  .sort(() => Math.random() - 0.5)
+  .slice(0, 4);
+
+// Métadonnées SEO
+const { title, description, image } = ville.data;
+const profession = ville.data.seo?.profession || "Service Professionnel";
+const seo = ville.data.seo || {
+  metaTitle: `${profession} ${title}`,
+  metaDescription: description
+};
+
+// Préparer les données pour le schéma SEO
+const professionalServiceSchema = {
+  name: `${profession} ${title}`,
+  url: Astro.url.href,
+  image: image,
+  telephone: "+33123456789",
+  address: {
+    street: "123 Rue Exemple",
+    city: title,
+    postalCode: "75000"
+  },
+  geo: {
+    latitude: "48.8566",
+    longitude: "2.3522"
+  },
+  openingHours: [
+    { dayOfWeek: "Monday", opens: "08:00", closes: "18:00" },
+    { dayOfWeek: "Tuesday", opens: "08:00", closes: "18:00" },
+    { dayOfWeek: "Wednesday", opens: "08:00", closes: "18:00" },
+    { dayOfWeek: "Thursday", opens: "08:00", closes: "18:00" },
+    { dayOfWeek: "Friday", opens: "08:00", closes: "18:00" },
+    { dayOfWeek: "Saturday", opens: "09:00", closes: "16:00" }
+  ],
+  services: sortedServices.slice(0, 5).map(service => ({
+    name: service.data.title,
+    description: service.data.description
+  })),
+  reviews: [
+    {
+      author: "Jean Dupont",
+      rating: 5,
+      text: "Excellent service, rapide et professionnel. Je recommande vivement !"
+    },
+    {
+      author: "Marie Martin",
+      rating: 4.5,
+      text: "Très satisfaite de la prestation. Personnel compétent et tarifs raisonnables."
+    }
+  ],
+  socialProfiles: [
+    "https://facebook.com/entreprise",
+    "https://twitter.com/entreprise",
+    "https://instagram.com/entreprise",
+    "https://linkedin.com/company/entreprise"
+  ]
+};
+
+const breadcrumbSchema = {
+  items: [
+    { name: "Accueil", url: "/" },
+    { name: "Zones d'intervention", url: "/villes" },
+    { name: title, url: isPremium ? `/villes/premium/${ville.slug}` : `/villes/${ville.slug}` }
+  ]
+};
+---
+
+<BaseLayout 
+  title={seo.metaTitle}
+  description={seo.metaDescription}
+  city={title}
+  profession={profession}
+  ogImage={image}
+  canonicalUrl={Astro.url.href}
+  schemaType="ProfessionalService"
+  schemaData={professionalServiceSchema}
+>
+  <!-- En-tête de page -->
+  <div class="relative bg-cover bg-center py-24" style={`background-image: url(${image});`}>
+    <div class="absolute inset-0 bg-blue-900/70"></div>
+    
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+      <!-- Fil d'Ariane -->
+      <div class="breadcrumbs text-blue-100 mb-6">
+        <div class="breadcrumbs-item">
+          <a href="/" class="breadcrumbs-link hover:text-white">Accueil</a>
+          <span class="breadcrumbs-separator">
+            <i class="fa-solid fa-chevron-right text-xs"></i>
+          </span>
+        </div>
+        <div class="breadcrumbs-item">
+          <a href="/villes" class="breadcrumbs-link hover:text-white">Zones d'intervention</a>
+          <span class="breadcrumbs-separator">
+            <i class="fa-solid fa-chevron-right text-xs"></i>
+          </span>
+        </div>
+        <div class="breadcrumbs-item">
+          <span class="breadcrumbs-current text-white">{title}</span>
+        </div>
+      </div>
+      
+      {isPremium && (
+        <div class="inline-flex items-center bg-yellow-500 text-white text-sm font-bold px-3 py-1 rounded-full mb-4">
+          <i class="fa-solid fa-star mr-1"></i>
+          Zone Premium
+        </div>
+      )}
+      
+      <h1 class="text-4xl sm:text-5xl font-bold text-white mb-4">
+        {profession} {title}
+      </h1>
+      
+      <p class="text-xl text-blue-100 max-w-3xl mb-8">
+        {description}
+      </p>
+      
+      <div class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
+        <a 
+          href="/contact" 
+          class="inline-block px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transform hover:scale-105 transition-all duration-300 text-center"
+        >
+          Demander un devis gratuit
+        </a>
+        
+        <a 
+          href="tel:+33123456789" 
+          class="inline-flex items-center justify-center px-6 py-3 bg-transparent border-2 border-white text-white font-semibold rounded-lg hover:bg-white hover:text-blue-900 transition-all duration-300 text-center"
+        >
+          <i class="fa-solid fa-phone mr-2"></i>
+          Appeler maintenant
+        </a>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Contenu principal -->
+  <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-12">
+      <!-- Contenu principal -->
+      <div class="lg:col-span-2">
+        <!-- Intro et présentation -->
+        <div class="mb-10">
+          <h2 class="text-3xl font-bold text-gray-900 mb-6 relative">
+            {profession} à {title} : Service professionnel et réactif
+            <span class="block w-20 h-1 bg-blue-600 mt-4"></span>
+          </h2>
+          
+          <!-- Contenu de la page -->
+          <div class="rich-text">
+            <Content />
+          </div>
+        </div>
+        
+        <!-- Nos services dans cette ville -->
+        <div class="mb-12">
+          <h2 class="text-2xl font-bold text-gray-900 mb-6">
+            Nos services à {title}
+          </h2>
+          
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {sortedServices.slice(0, 6).map((service) => (
+              <a 
+                href={`/services/${service.slug}`}
+                class="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 p-4 flex items-start group"
+              >
+                <div class="flex-shrink-0 w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mr-4">
+                  <i class={`fa-solid fa-${service.data.icon} text-blue-600`}></i>
+                </div>
+                <div>
+                  <h3 class="text-lg font-semibold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors duration-300">
+                    {service.data.title} à {title}
+                  </h3>
+                  <p class="text-sm text-gray-600">
+                    {service.data.description}
+                  </p>
+                </div>
+              </a>
+            ))}
+          </div>
+          
+          <div class="mt-6 text-center">
+            <a href="/services" class="inline-flex items-center text-blue-600 font-medium hover:text-blue-800 transition-colors duration-300">
+              Voir tous nos services
+              <i class="fa-solid fa-arrow-right ml-2"></i>
+            </a>
+          </div>
+        </div>
+        
+        <!-- Pourquoi nous choisir à [Ville] -->
+        <div class="mb-12 bg-gray-50 rounded-xl p-6 md:p-8">
+          <h2 class="text-2xl font-bold text-gray-900 mb-6">
+            Pourquoi nous choisir à {title} ?
+          </h2>
+          
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="flex items-start">
+              <div class="flex-shrink-0 w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mr-4">
+                <i class="fa-solid fa-clock text-blue-600 text-xl"></i>
+              </div>
+              <div>
+                <h3 class="text-lg font-semibold text-gray-900 mb-2">Intervention rapide</h3>
+                <p class="text-gray-700">
+                  Nous intervenons rapidement dans toute la ville de {title} et ses environs, souvent le jour même de votre appel.
+                </p>
+              </div>
+            </div>
+            
+            <div class="flex items-start">
+              <div class="flex-shrink-0 w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mr-4">
+                <i class="fa-solid fa-certificate text-blue-600 text-xl"></i>
+              </div>
+              <div>
+                <h3 class="text-lg font-semibold text-gray-900 mb-2">Équipe certifiée</h3>
+                <p class="text-gray-700">
+                  Nos techniciens sont certifiés et expérimentés, garantissant un travail de qualité pour chaque intervention.
+                </p>
+              </div>
+            </div>
+            
+            <div class="flex items-start">
+              <div class="flex-shrink-0 w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mr-4">
+                <i class="fa-solid fa-euro-sign text-blue-600 text-xl"></i>
+              </div>
+              <div>
+                <h3 class="text-lg font-semibold text-gray-900 mb-2">Tarifs transparents</h3>
+                <p class="text-gray-700">
+                  Nous proposons des tarifs clairs et un devis gratuit avant toute intervention, sans mauvaise surprise.
+                </p>
+              </div>
+            </div>
+            
+            <div class="flex items-start">
+              <div class="flex-shrink-0 w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mr-4">
+                <i class="fa-solid fa-headset text-blue-600 text-xl"></i>
+              </div>
+              <div>
+                <h3 class="text-lg font-semibold text-gray-900 mb-2">Service client 24/7</h3>
+                <p class="text-gray-700">
+                  Notre service client est disponible 24h/24 et 7j/7 pour répondre à toutes vos questions et urgences.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Témoignages clients -->
+        <div class="mb-12">
+          <h2 class="text-2xl font-bold text-gray-900 mb-6">
+            Ce que disent nos clients à {title}
+          </h2>
+          
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="bg-white rounded-lg p-5 shadow-sm">
+              <div class="flex text-yellow-400 mb-2">
+                <i class="fa-solid fa-star"></i>
+                <i class="fa-solid fa-star"></i>
+                <i class="fa-solid fa-star"></i>
+                <i class="fa-solid fa-star"></i>
+                <i class="fa-solid fa-star"></i>
+              </div>
+              <p class="text-gray-700 italic mb-4">
+                "Service professionnel et rapide. Le technicien a résolu mon problème en moins d'une heure. Je recommande vivement à tous les habitants de {title} !"
+              </p>
+              <div class="flex items-center">
+                <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center mr-3">
+                  <i class="fa-solid fa-user text-blue-600"></i>
+                </div>
+                <div>
+                  <p class="font-semibold">Jean Dupont</p>
+                  <p class="text-sm text-gray-600">{title}</p>
+                </div>
+              </div>
+            </div>
+            
+            <div class="bg-white rounded-lg p-5 shadow-sm">
+              <div class="flex text-yellow-400 mb-2">
+                <i class="fa-solid fa-star"></i>
+                <i class="fa-solid fa-star"></i>
+                <i class="fa-solid fa-star"></i>
+                <i class="fa-solid fa-star"></i>
+                <i class="fa-solid fa-star-half-alt"></i>
+              </div>
+              <p class="text-gray-700 italic mb-4">
+                "Une équipe à l'écoute qui a su répondre parfaitement à mes besoins. Travail soigné et tarifs transparents. Un grand merci !"
+              </p>
+              <div class="flex items-center">
+                <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center mr-3">
+                  <i class="fa-solid fa-user text-blue-600"></i>
+                </div>
+                <div>
+                  <p class="font-semibold">Marie Martin</p>
+                  <p class="text-sm text-gray-600">{title}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="mt-6 text-center">
+            <a href="#avis" class="inline-flex items-center text-blue-600 font-medium hover:text-blue-800 transition-colors duration-300">
+              Voir tous les avis
+              <i class="fa-solid fa-arrow-right ml-2"></i>
+            </a>
+          </div>
+        </div>
+        
+        <!-- FAQ -->
+        <div class="mb-12">
+          <h2 class="text-2xl font-bold text-gray-900 mb-6">
+            Questions fréquentes sur nos services à {title}
+          </h2>
+          
+          <div class="space-y-4">
+            <div class="border border-gray-200 rounded-lg overflow-hidden">
+              <button class="w-full px-6 py-4 text-left flex justify-between items-center bg-gray-50 hover:bg-gray-100 transition-colors duration-300 focus:outline-none city-faq-question" data-index="0">
+                <span class="font-semibold">Quel est votre délai d'intervention à {title} ?</span>
+                <i class="fa-solid fa-chevron-down text-blue-600 transform transition-transform duration-300"></i>
+              </button>
+              <div class="city-faq-answer px-6 py-4 hidden" data-index="0">
+                <p class="text-gray-700">
+                  Nous intervenons généralement dans un délai de 1 à 24 heures à {title}, selon le niveau d'urgence de votre demande. Pour les urgences, nous nous efforçons d'intervenir dans l'heure suivant votre appel.
+                </p>
+              </div>
+            </div>
+            
+            <div class="border border-gray-200 rounded-lg overflow-hidden">
+              <button class="w-full px-6 py-4 text-left flex justify-between items-center bg-gray-50 hover:bg-gray-100 transition-colors duration-300 focus:outline-none city-faq-question" data-index="1">
+                <span class="font-semibold">Couvrez-vous toutes les zones de {title} ?</span>
+                <i class="fa-solid fa-chevron-down text-blue-600 transform transition-transform duration-300"></i>
+              </button>
+              <div class="city-faq-answer px-6 py-4 hidden" data-index="1">
+                <p class="text-gray-700">
+                  Oui, nous couvrons l'ensemble de la ville de {title} ainsi que sa périphérie dans un rayon de 15 km. Nos techniciens connaissent parfaitement la région et peuvent intervenir rapidement où que vous soyez.
+                </p>
+              </div>
+            </div>
+            
+            <div class="border border-gray-200 rounded-lg overflow-hidden">
+              <button class="w-full px-6 py-4 text-left flex justify-between items-center bg-gray-50 hover:bg-gray-100 transition-colors duration-300 focus:outline-none city-faq-question" data-index="2">
+                <span class="font-semibold">Proposez-vous des tarifs spécifiques pour {title} ?</span>
+                <i class="fa-solid fa-chevron-down text-blue-600 transform transition-transform duration-300"></i>
+              </button>
+              <div class="city-faq-answer px-6 py-4 hidden" data-index="2">
+                <p class="text-gray-700">
+                  Nos tarifs sont standardisés sur l'ensemble de nos zones d'intervention, incluant {title}. Nous proposons néanmoins des offres spéciales ponctuelles pour les habitants de {title}, n'hésitez pas à nous demander lors de votre appel.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Infos locales -->
+        <div>
+          <h2 class="text-2xl font-bold text-gray-900 mb-6">
+            Informations locales - {title}
+          </h2>
+          
+          <div class="bg-white rounded-lg shadow-md p-6">
+            <p class="text-gray-700 mb-4">
+              {title} est une ville où nous intervenons régulièrement pour offrir nos services professionnels. Notre équipe connaît parfaitement les spécificités locales et est en mesure de vous proposer des solutions adaptées à vos besoins.
+            </p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
+              <div class="bg-gray-50 p-4 rounded-lg">
+                <h3 class="text-lg font-semibold text-gray-900 mb-2">Horaires d'intervention</h3>
+                <ul class="space-y-1 text-gray-700">
+                  <li class="flex justify-between">
+                    <span>Lundi - Vendredi:</span>
+                    <span>8h - 20h</span>
+                  </li>
+                  <li class="flex justify-between">
+                    <span>Samedi:</span>
+                    <span>9h - 18h</span>
+                  </li>
+                  <li class="flex justify-between">
+                    <span>Dimanche & Jours fériés:</span>
+                    <span>Urgences uniquement</span>
+                  </li>
+                </ul>
+              </div>
+              
+              <div class="bg-gray-50 p-4 rounded-lg">
+                <h3 class="text-lg font-semibold text-gray-900 mb-2">Contact local</h3>
+                <ul class="space-y-2 text-gray-700">
+                  <li class="flex items-center">
+                    <i class="fa-solid fa-phone w-5 text-blue-600 mr-2"></i>
+                    <a href="tel:+33123456789" class="hover:text-blue-600">01 23 45 67 89</a>
+                  </li>
+                  <li class="flex items-center">
+                    <i class="fa-solid fa-envelope w-5 text-blue-600 mr-2"></i>
+                    <a href="mailto:contact@exemple.fr" class="hover:text-blue-600">contact@exemple.fr</a>
+                  </li>
+                  <li class="flex items-center">
+                    <i class="fa-solid fa-location-dot w-5 text-blue-600 mr-2"></i>
+                    <span>Service à domicile à {title}</span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Sidebar -->
+      <div class="lg:col-span-1">
+        <!-- Carte CTA -->
+        <div class="card mb-8 sticky top-24">
+          <div class="p-6 border-b border-gray-200 bg-blue-50">
+            <h3 class="text-xl font-bold text-gray-900 mb-2">
+              Besoin d'un service à {title} ?
+            </h3>
+            <p class="text-gray-700 mb-4">
+              Contactez-nous pour obtenir un devis personnalisé gratuit et sans engagement.
+            </p>
+            
+            <a href="/contact" class="btn btn-primary w-full mb-4">
+              Demander un devis
+            </a>
+            
+            <a href="tel:+33123456789" class="flex items-center justify-center w-full py-3 text-blue-600 font-medium hover:text-blue-800 transition-colors duration-300">
+              <i class="fa-solid fa-phone mr-2"></i>
+              01 23 45 67 89
+            </a>
+          </div>
+          
+          <!-- Avantages pour cette ville -->
+          <div class="p-6 bg-white">
+            <h4 class="font-semibold text-gray-900 mb-4">
+              Nos avantages à {title}
+            </h4>
+            
+            <ul class="space-y-3">
+              <li class="flex items-start">
+                <i class="fa-solid fa-check-circle text-green-500 mt-1 mr-3"></i>
+                <span class="text-gray-700">Intervention dans toute la ville et sa périphérie</span>
+              </li>
+              <li class="flex items-start">
+                <i class="fa-solid fa-check-circle text-green-500 mt-1 mr-3"></i>
+                <span class="text-gray-700">Service rapide, souvent le jour même</span>
+              </li>
+              <li class="flex items-start">
+                <i class="fa-solid fa-check-circle text-green-500 mt-1 mr-3"></i>
+                <span class="text-gray-700">Techniciens connaissant parfaitement {title}</span>
+              </li>
+              <li class="flex items-start">
+                <i class="fa-solid fa-check-circle text-green-500 mt-1 mr-3"></i>
+                <span class="text-gray-700">Devis détaillé gratuit et sans engagement</span>
+              </li>
+              <li class="flex items-start">
+                <i class="fa-solid fa-check-circle text-green-500 mt-1 mr-3"></i>
+                <span class="text-gray-700">Garantie satisfaction à {title}</span>
+              </li>
+            </ul>
+          </div>
+          
+          <!-- Avis locaux -->
+          <div class="p-6 bg-gray-50 border-t border-gray-200">
+            <h4 class="font-semibold text-gray-900 mb-3">
+              Avis clients à {title}
+            </h4>
+            
+            <div class="flex items-center mb-3">
+              <div class="flex text-yellow-400 mr-2">
+                <i class="fa-solid fa-star"></i>
+                <i class="fa-solid fa-star"></i>
+                <i class="fa-solid fa-star"></i>
+                <i class="fa-solid fa-star"></i>
+                <i class="fa-solid fa-star-half-alt"></i>
+              </div>
+              <span class="text-gray-700">4.8/5 (42 avis)</span>
+            </div>
+            
+            <a href="#avis" class="text-blue-600 hover:text-blue-800 text-sm font-medium">
+              Voir tous les avis →
+            </a>
+          </div>
+        </div>
+        
+        <!-- Villes proches -->
+        <div class="bg-white rounded-xl shadow-md overflow-hidden mb-8">
+          <div class="p-6 bg-gray-50 border-b border-gray-200">
+            <h3 class="text-lg font-semibold text-gray-900">
+              Autres villes proches
+            </h3>
+          </div>
+          
+          <div class="p-6">
+            <ul class="space-y-3">
+              {nearbyVilles.map((nearbyVille) => (
+                <li>
+                  <a 
+                    href={isPremium 
+                      ? `/villes/premium/${nearbyVille.slug}` 
+                      : `/villes/${nearbyVille.slug}`}
+                    class="flex items-center text-gray-700 hover:text-blue-600 transition-colors duration-300"
+                  >
+                    <i class="fa-solid fa-location-dot text-blue-600 mr-3"></i>
+                    {nearbyVille.data.title}
+                  </a>
+                </li>
+              ))}
+            </ul>
+            
+            <a href="/villes" class="inline-block mt-4 text-blue-600 hover:text-blue-800 font-medium">
+              Voir toutes nos zones d'intervention →
+            </a>
+          </div>
+        </div>
+        
+        <!-- Numéros d'urgence -->
+        <div class="bg-white rounded-xl shadow-md overflow-hidden">
+          <div class="p-6 bg-red-50 border-b border-gray-200">
+            <h3 class="text-lg font-semibold text-gray-900 flex items-center">
+              <i class="fa-solid fa-exclamation-circle text-red-600 mr-2"></i>
+              Service d'urgence
+            </h3>
+          </div>
+          
+          <div class="p-6">
+            <p class="text-gray-700 mb-4">
+              Besoin d'une intervention urgente à {title} ? Notre équipe est disponible 24h/24 et 7j/7 pour les urgences.
+            </p>
+            
+            <a 
+              href="tel:+33123456789" 
+              class="flex items-center justify-center w-full py-3 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-lg transition-colors duration-300"
+            >
+              <i class="fa-solid fa-phone mr-2"></i>
+              Numéro d'urgence: 01 23 45 67 89
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Section Google Map -->
+    <div class="mt-12 pt-8 border-t border-gray-200">
+      <h2 class="text-2xl font-bold text-gray-900 mb-6">
+        Notre zone d'intervention à {title}
+      </h2>
+      
+      <div class="bg-white rounded-xl shadow-md overflow-hidden">
+        <div class="aspect-w-16 aspect-h-9">
+          <iframe 
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2624.9916256937595!2d2.2922926156742845!3d48.85837007928754!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x47e66e2964e34e2d%3A0x8ddca9ee380ef7e0!2sEiffel%20Tower!5e0!3m2!1sen!2sfr!4v1647541449911!5m2!1sen!2sfr" 
+            style="border:0;" 
+            allowfullscreen="" 
+            loading="lazy"
+            class="w-full h-full"
+          ></iframe>
+        </div>
+      </div>
+    </div>
+    
+    <!-- CTA de fin de page -->
+    <div class="mt-16 bg-blue-50 rounded-2xl p-8 text-center">
+      <h2 class="text-2xl font-bold text-gray-900 mb-4">
+        Besoin d'un {profession} à {title} ?
+      </h2>
+      <p class="text-gray-700 max-w-2xl mx-auto mb-6">
+        Contactez notre équipe dès maintenant pour obtenir un devis gratuit et une intervention rapide dans toute la ville de {title} et ses environs.
+      </p>
+      <div class="flex flex-col sm:flex-row gap-4 justify-center">
+        <a href="/contact" class="btn btn-primary">
+          Demander un devis
+        </a>
+        <a href="tel:+33123456789" class="btn btn-outline">
+          <i class="fa-solid fa-phone mr-2"></i>
+          Nous appeler
+        </a>
+      </div>
+    </div>
+  </div>
+</BaseLayout>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    // Gestion des FAQ
+    const questions = document.querySelectorAll('.city-faq-question');
+    
+    questions.forEach(question => {
+      question.addEventListener('click', () => {
+        const index = question.getAttribute('data-index');
+        const answer = document.querySelector(`.city-faq-answer[data-index="${index}"]`);
+        const icon = question.querySelector('i');
+        
+        // Fermer toutes les autres réponses
+        questions.forEach(q => {
+          if (q !== question) {
+            const idx = q.getAttribute('data-index');
+            const ans = document.querySelector(`.city-faq-answer[data-index="${idx}"]`);
+            const icn = q.querySelector('i');
+            
+            ans.classList.add('hidden');
+            icn.style.transform = 'rotate(0deg)';
+          }
+        });
+        
+        // Ouvrir/fermer la réponse actuelle
+        answer.classList.toggle('hidden');
+        icon.style.transform = answer.classList.contains('hidden') ? 'rotate(0deg)' : 'rotate(-180deg)';
+      });
+    });
+    
+    // Ouvrir la première question par défaut
+    if (questions.length > 0) {
+      const firstQuestion = questions[0];
+      const index = firstQuestion.getAttribute('data-index');
+      const answer = document.querySelector(`.city-faq-answer[data-index="${index}"]`);
+      const icon = firstQuestion.querySelector('i');
+      
+      answer.classList.remove('hidden');
+      icon.style.transform = 'rotate(-180deg)';
+    }
+  });
+</script>

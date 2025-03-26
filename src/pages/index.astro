@@ -1,0 +1,146 @@
+---
+// src/pages/index.astro
+import { getCollection, getEntry } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+// Importation des composants de la page d'accueil
+import HeroBanner from '../components/homepage/HeroBanner.astro';
+import AboutSection from '../components/homepage/AboutSection.astro';
+import ServicesSection from '../components/homepage/ServicesSection.astro';
+import PricingGrid from '../components/homepage/PricingGrid.astro';
+import ProcessSection from '../components/homepage/ProcessSection.astro';
+import CtaSection from '../components/homepage/CtaSection.astro';
+import FaqSection from '../components/homepage/FaqSection.astro';
+import ReviewsSection from '../components/homepage/ReviewsSection.astro';
+
+// Récupération des données pour la page
+const heroData = await getEntry('homepage', 'hero') || { data: {} };
+const aboutData = await getEntry('homepage', 'about') || { data: {} };
+const pricingData = await getEntry('homepage', 'pricing') || { data: {} };
+const processData = await getEntry('homepage', 'process') || { data: {} };
+const ctaData = await getEntry('homepage', 'cta') || { data: {} };
+const faqData = await getEntry('homepage', 'faq') || { data: {} };
+const reviewsData = await getEntry('homepage', 'reviews') || { data: {} };
+
+// Récupération des services pour la section Services
+const services = (await getCollection('services')) || [];
+const sortedServices = services.sort((a, b) => (a.data.order || 0) - (b.data.order || 0));
+
+// Meta données SEO
+const seo = heroData.data?.seo || {};
+const title = seo?.metaTitle || `${seo?.profession} ${seo?.city}`;
+const description = seo?.metaDescription || heroData.data.description;
+
+// Préparer les données pour le schéma SEO
+const businessSchema = {
+  name: `${seo?.profession} ${seo?.city}`,
+  url: Astro.site?.href || '/',
+  image: heroData.data.backgroundImage,
+  telephone: "+33123456789",
+  address: {
+    street: "123 Rue Exemple",
+    city: seo?.city || "Ville",
+    postalCode: "75000"
+  },
+  geo: {
+    latitude: "48.8566",
+    longitude: "2.3522"
+  },
+  openingHours: [
+    { dayOfWeek: "Monday", opens: "08:00", closes: "18:00" },
+    { dayOfWeek: "Tuesday", opens: "08:00", closes: "18:00" },
+    { dayOfWeek: "Wednesday", opens: "08:00", closes: "18:00" },
+    { dayOfWeek: "Thursday", opens: "08:00", closes: "18:00" },
+    { dayOfWeek: "Friday", opens: "08:00", closes: "18:00" },
+    { dayOfWeek: "Saturday", opens: "09:00", closes: "16:00" }
+  ],
+  services: sortedServices.map(service => ({
+    name: service.data.title,
+    description: service.data.description
+  })),
+  reviews: reviewsData.data.testimonials.map(review => ({
+    author: review.name,
+    rating: review.rating,
+    text: review.comment
+  })),
+  socialProfiles: [
+    "https://facebook.com/entreprise",
+    "https://twitter.com/entreprise",
+    "https://instagram.com/entreprise",
+    "https://linkedin.com/company/entreprise"
+  ]
+};
+---
+
+<BaseLayout 
+  title={title}
+  description={description}
+  city={seo?.city}
+  profession={seo?.profession}
+  ogImage={heroData.data.backgroundImage}
+  schemaType="ProfessionalService"
+  schemaData={businessSchema}
+>
+  <!-- Hero Banner -->
+  <HeroBanner
+    title={heroData.data.title}
+    description={heroData.data.description}
+    backgroundImage={heroData.data.backgroundImage}
+    buttonText={heroData.data.buttonText}
+    buttonUrl={heroData.data.buttonUrl}
+    overlay={heroData.data.overlay}
+  />
+  
+  <!-- À propos -->
+  <AboutSection
+    title={aboutData.data.title}
+    description={aboutData.data.description}
+    image={aboutData.data.image}
+    keyPoints={aboutData.data.keyPoints}
+  />
+  
+  <!-- Services -->
+  <ServicesSection
+    services={sortedServices}
+  />
+  
+  <!-- Grille tarifaire -->
+  <PricingGrid
+    title={pricingData.data.title}
+    description={pricingData.data.description}
+    plans={pricingData.data.plans}
+    buttonText={pricingData.data.buttonText}
+    buttonUrl={pricingData.data.buttonUrl}
+  />
+  
+  <!-- Processus d'intervention -->
+  <ProcessSection
+    title={processData?.data.title || "Notre Processus d'Intervention"}
+    description={processData?.data.description || "Découvrez notre méthode de travail professionnelle"}
+    steps={processData?.data.steps || []}
+  />
+  
+  <!-- Section CTA -->
+  <CtaSection
+    title={ctaData.data.title}
+    description={ctaData.data.description}
+    backgroundImage={ctaData.data.backgroundImage}
+    buttonText={ctaData.data.buttonText}
+    buttonUrl={ctaData.data.buttonUrl}
+    phoneNumber={ctaData.data.phoneNumber}
+  />
+  
+  <!-- FAQ -->
+  <FaqSection
+    title={faqData.data.title}
+    description={faqData.data.description}
+    questions={faqData.data.questions}
+  />
+  
+  <!-- Avis clients -->
+  <ReviewsSection
+    title={reviewsData.data.title}
+    description={reviewsData.data.description}
+    testimonials={reviewsData.data.testimonials}
+  />
+</BaseLayout>

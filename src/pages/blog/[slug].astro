@@ -1,0 +1,584 @@
+---
+// src/pages/blog/[slug].astro
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { Image } from 'astro:assets';
+
+// Fonction pour générer les chemins statiques
+export async function getStaticPaths() {
+  const blogPosts = await getCollection('blog');
+  
+  return blogPosts.map(post => {
+    return {
+      params: { slug: post.slug },
+      props: { post }
+    };
+  });
+}
+
+// Props
+const { post } = Astro.props;
+const { Content } = await post.render();
+
+// Formatage de la date
+const formatDate = (dateString) => {
+  const date = new Date(dateString);
+  return new Intl.DateTimeFormat('fr-FR', { 
+    year: 'numeric', 
+    month: 'long', 
+    day: 'numeric' 
+  }).format(date);
+};
+
+// Récupération des articles similaires
+const allPosts = await getCollection('blog');
+const similarPosts = allPosts
+  .filter(p => p.slug !== post.slug)
+  .sort(() => Math.random() - 0.5)
+  .slice(0, 3);
+
+// Métadonnées SEO
+const { title, excerpt, featuredImage, date, author } = post.data;
+const seo = post.data.seo || {
+  metaTitle: title,
+  metaDescription: excerpt
+};
+
+// Préparer les données pour le schéma SEO
+const articleSchema = {
+  headline: title,
+  image: featuredImage,
+  datePublished: date,
+  dateModified: date,
+  author: author,
+  publisher: {
+    name: "Votre Entreprise",
+    logo: "/images/logo.svg"
+  },
+  description: excerpt
+};
+
+const breadcrumbSchema = {
+  items: [
+    { name: "Accueil", url: "/" },
+    { name: "Blog", url: "/blog" },
+    { name: title, url: `/blog/${post.slug}` }
+  ]
+};
+
+// Estimation du temps de lecture (1 mot = 0.25 secondes en moyenne)
+const calculateReadingTime = (content) => {
+  const wordCount = content.split(/\s+/).length;
+  const readingTime = Math.ceil(wordCount / 225); // 225 mots par minute
+  return readingTime;
+};
+---
+
+<BaseLayout 
+  title={seo.metaTitle}
+  description={seo.metaDescription}
+  ogImage={featuredImage}
+  canonicalUrl={`${Astro.site?.href}/blog/${post.slug}`}
+  schemaType="Article"
+  schemaData={articleSchema}
+>
+  <!-- En-tête de page -->
+  <div class="bg-gray-50 pt-8 pb-16">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+      <!-- Fil d'Ariane -->
+      <div class="breadcrumbs text-gray-600 mb-6">
+        <div class="breadcrumbs-item">
+          <a href="/" class="breadcrumbs-link">Accueil</a>
+          <span class="breadcrumbs-separator">
+            <i class="fa-solid fa-chevron-right text-xs"></i>
+          </span>
+        </div>
+        <div class="breadcrumbs-item">
+          <a href="/blog" class="breadcrumbs-link">Blog</a>
+          <span class="breadcrumbs-separator">
+            <i class="fa-solid fa-chevron-right text-xs"></i>
+          </span>
+        </div>
+        <div class="breadcrumbs-item">
+          <span class="breadcrumbs-current">{title}</span>
+        </div>
+      </div>
+      
+      <div class="text-center max-w-3xl mx-auto">
+        <h1 class="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+          {title}
+        </h1>
+        
+        <div class="flex flex-wrap items-center justify-center text-gray-600 space-x-4 mb-8">
+          <div class="flex items-center">
+            <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center mr-3">
+              <i class="fa-solid fa-user text-blue-600"></i>
+            </div>
+            <span>{author}</span>
+          </div>
+          
+          <span class="hidden sm:inline">•</span>
+          
+          <div class="flex items-center">
+            <i class="fa-regular fa-calendar-alt mr-2 text-blue-600"></i>
+            <time datetime={date}>{formatDate(date)}</time>
+          </div>
+          
+          <span class="hidden sm:inline">•</span>
+          
+          <div class="flex items-center">
+            <i class="fa-regular fa-clock mr-2 text-blue-600"></i>
+            <span>{calculateReadingTime(post.body)} min de lecture</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Image principale -->
+  <div class="relative -mt-8 mb-12">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="rounded-xl overflow-hidden shadow-xl max-w-4xl mx-auto aspect-video">
+        <img 
+          src={featuredImage} 
+          alt={title}
+          class="w-full h-full object-cover"
+        />
+      </div>
+    </div>
+  </div>
+  
+  <!-- Contenu principal -->
+  <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div class="grid grid-cols-1 lg:grid-cols-4 gap-12">
+      <!-- Contenu de l'article -->
+      <div class="lg:col-span-3">
+        <article class="prose prose-lg max-w-none prose-headings:text-gray-900 prose-headings:font-bold prose-p:text-gray-700 prose-a:text-blue-600 prose-a:font-semibold prose-a:no-underline hover:prose-a:text-blue-800">
+          <Content />
+        </article>
+        
+        <!-- Barre de partage -->
+        <div class="mt-12 pt-8 border-t border-gray-200">
+          <div class="flex flex-wrap items-center justify-between">
+            <div>
+              <h3 class="text-xl font-semibold text-gray-900 mb-3">
+                Partagez cet article
+              </h3>
+              <div class="flex space-x-3">
+                <a href="#" class="w-10 h-10 rounded-full bg-[#3b5998] text-white flex items-center justify-center hover:opacity-90 transition-opacity duration-300">
+                  <i class="fa-brands fa-facebook-f"></i>
+                </a>
+                <a href="#" class="w-10 h-10 rounded-full bg-[#1da1f2] text-white flex items-center justify-center hover:opacity-90 transition-opacity duration-300">
+                  <i class="fa-brands fa-twitter"></i>
+                </a>
+                <a href="#" class="w-10 h-10 rounded-full bg-[#0077b5] text-white flex items-center justify-center hover:opacity-90 transition-opacity duration-300">
+                  <i class="fa-brands fa-linkedin-in"></i>
+                </a>
+                <a href="#" class="w-10 h-10 rounded-full bg-[#25D366] text-white flex items-center justify-center hover:opacity-90 transition-opacity duration-300">
+                  <i class="fa-brands fa-whatsapp"></i>
+                </a>
+                <a href="#" class="w-10 h-10 rounded-full bg-gray-200 text-gray-700 flex items-center justify-center hover:bg-gray-300 transition-colors duration-300">
+                  <i class="fa-solid fa-envelope"></i>
+                </a>
+              </div>
+            </div>
+            
+            <div class="mt-4 sm:mt-0">
+              <span class="text-gray-600">Vous avez aimé cet article ?</span>
+              <div class="flex space-x-2 mt-2">
+                <button class="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-full text-gray-700 flex items-center justify-center transition-colors duration-300">
+                  <i class="fa-regular fa-thumbs-up mr-2"></i>
+                  <span>J'aime</span>
+                </button>
+                <button class="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-full text-gray-700 flex items-center justify-center transition-colors duration-300">
+                  <i class="fa-regular fa-bookmark mr-2"></i>
+                  <span>Sauvegarder</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Bio de l'auteur -->
+        <div class="mt-12 bg-gray-50 rounded-xl p-6">
+          <div class="flex flex-col sm:flex-row items-center sm:items-start">
+            <div class="flex-shrink-0 mb-4 sm:mb-0 sm:mr-6">
+              <div class="w-20 h-20 rounded-full bg-blue-100 flex items-center justify-center">
+                <i class="fa-solid fa-user text-blue-600 text-3xl"></i>
+              </div>
+            </div>
+            <div>
+              <h3 class="text-xl font-semibold text-gray-900 mb-2">
+                {author}
+              </h3>
+              <p class="text-gray-700 mb-3">
+                Expert dans le domaine avec plus de 10 ans d'expérience. Passionné par le partage de connaissances et les dernières tendances du secteur.
+              </p>
+              <div class="flex space-x-3">
+                <a href="#" class="text-blue-600 hover:text-blue-800 transition-colors duration-300">
+                  <i class="fa-brands fa-twitter"></i>
+                </a>
+                <a href="#" class="text-blue-600 hover:text-blue-800 transition-colors duration-300">
+                  <i class="fa-brands fa-linkedin-in"></i>
+                </a>
+                <a href="#" class="text-blue-600 hover:text-blue-800 transition-colors duration-300">
+                  <i class="fa-solid fa-globe"></i>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Section commentaires (facultatif) -->
+        <div class="mt-12">
+          <h3 class="text-2xl font-semibold text-gray-900 mb-6">
+            Commentaires (3)
+          </h3>
+          
+          <div class="space-y-6">
+            <!-- Commentaire 1 -->
+            <div class="bg-white rounded-lg p-6 shadow-sm">
+              <div class="flex flex-col sm:flex-row sm:items-start">
+                <div class="flex-shrink-0 mb-4 sm:mb-0 sm:mr-4">
+                  <div class="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center">
+                    <i class="fa-solid fa-user text-blue-600"></i>
+                  </div>
+                </div>
+                <div class="flex-grow">
+                  <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-2">
+                    <h4 class="font-semibold text-gray-900">Marie Dupont</h4>
+                    <span class="text-sm text-gray-500">Il y a 2 jours</span>
+                  </div>
+                  <p class="text-gray-700 mb-3">
+                    Excellent article qui explique clairement les concepts clés. Merci pour ces informations précieuses !
+                  </p>
+                  <div class="flex items-center space-x-4">
+                    <button class="text-gray-500 hover:text-blue-600 transition-colors duration-300 flex items-center">
+                      <i class="fa-regular fa-thumbs-up mr-1"></i>
+                      <span>8</span>
+                    </button>
+                    <button class="text-gray-500 hover:text-blue-600 transition-colors duration-300">
+                      Répondre
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Commentaire 2 -->
+            <div class="bg-white rounded-lg p-6 shadow-sm">
+              <div class="flex flex-col sm:flex-row sm:items-start">
+                <div class="flex-shrink-0 mb-4 sm:mb-0 sm:mr-4">
+                  <div class="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center">
+                    <i class="fa-solid fa-user text-blue-600"></i>
+                  </div>
+                </div>
+                <div class="flex-grow">
+                  <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-2">
+                    <h4 class="font-semibold text-gray-900">Jean Martin</h4>
+                    <span class="text-sm text-gray-500">Il y a 5 jours</span>
+                  </div>
+                  <p class="text-gray-700 mb-3">
+                    J'ai une question concernant le point 3. Est-ce que cela s'applique également dans le cas où... ?
+                  </p>
+                  <div class="flex items-center space-x-4">
+                    <button class="text-gray-500 hover:text-blue-600 transition-colors duration-300 flex items-center">
+                      <i class="fa-regular fa-thumbs-up mr-1"></i>
+                      <span>3</span>
+                    </button>
+                    <button class="text-gray-500 hover:text-blue-600 transition-colors duration-300">
+                      Répondre
+                    </button>
+                  </div>
+                  
+                  <!-- Réponse -->
+                  <div class="mt-4 ml-6 p-4 bg-gray-50 rounded-lg">
+                    <div class="flex flex-col sm:flex-row sm:items-start">
+                      <div class="flex-shrink-0 mb-2 sm:mb-0 sm:mr-4">
+                        <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
+                          <i class="fa-solid fa-user text-blue-600"></i>
+                        </div>
+                      </div>
+                      <div class="flex-grow">
+                        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-2">
+                          <h4 class="font-semibold text-gray-900">{author} <span class="text-xs bg-blue-100 text-blue-800 px-2 py-0.5 rounded">Auteur</span></h4>
+                          <span class="text-sm text-gray-500">Il y a 4 jours</span>
+                        </div>
+                        <p class="text-gray-700">
+                          Bonjour Jean, merci pour votre question. Oui, cela s'applique dans tous les cas, mais avec quelques nuances que j'expliquerai dans un prochain article.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Commentaire 3 -->
+            <div class="bg-white rounded-lg p-6 shadow-sm">
+              <div class="flex flex-col sm:flex-row sm:items-start">
+                <div class="flex-shrink-0 mb-4 sm:mb-0 sm:mr-4">
+                  <div class="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center">
+                    <i class="fa-solid fa-user text-blue-600"></i>
+                  </div>
+                </div>
+                <div class="flex-grow">
+                  <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-2">
+                    <h4 class="font-semibold text-gray-900">Sophie Bernard</h4>
+                    <span class="text-sm text-gray-500">Il y a 1 semaine</span>
+                  </div>
+                  <p class="text-gray-700 mb-3">
+                    Je viens d'appliquer ces conseils et les résultats sont bluffants. Je recommande vivement !
+                  </p>
+                  <div class="flex items-center space-x-4">
+                    <button class="text-gray-500 hover:text-blue-600 transition-colors duration-300 flex items-center">
+                      <i class="fa-regular fa-thumbs-up mr-1"></i>
+                      <span>12</span>
+                    </button>
+                    <button class="text-gray-500 hover:text-blue-600 transition-colors duration-300">
+                      Répondre
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Formulaire de commentaire -->
+          <div class="mt-8">
+            <h4 class="text-xl font-semibold text-gray-900 mb-4">
+              Laisser un commentaire
+            </h4>
+            
+            <form class="space-y-4">
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div class="form-group">
+                  <label for="comment-name" class="form-label">Nom*</label>
+                  <input type="text" id="comment-name" class="form-input" required>
+                </div>
+                
+                <div class="form-group">
+                  <label for="comment-email" class="form-label">Email*</label>
+                  <input type="email" id="comment-email" class="form-input" required>
+                </div>
+              </div>
+              
+              <div class="form-group">
+                <label for="comment-content" class="form-label">Commentaire*</label>
+                <textarea id="comment-content" rows="4" class="form-textarea" required></textarea>
+              </div>
+              
+              <div class="form-group">
+                <label class="flex items-start">
+                  <input type="checkbox" class="form-checkbox mt-1" required>
+                  <span class="ml-2 text-sm text-gray-700">
+                    J'accepte que mes données soient traitées conformément à la politique de confidentialité.
+                  </span>
+                </label>
+              </div>
+              
+              <div>
+                <button type="submit" class="btn btn-primary">
+                  Publier le commentaire
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Sidebar -->
+      <div class="lg:col-span-1">
+        <!-- Auteur -->
+        <div class="bg-white rounded-xl shadow-md p-6 mb-8">
+          <h3 class="text-lg font-semibold text-gray-900 mb-4">
+            À propos de l'auteur
+          </h3>
+          
+          <div class="flex items-center mb-4">
+            <div class="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center mr-3">
+              <i class="fa-solid fa-user text-blue-600"></i>
+            </div>
+            <div>
+              <p class="font-semibold">{author}</p>
+              <p class="text-sm text-gray-600">Expert</p>
+            </div>
+          </div>
+          
+          <p class="text-gray-700 text-sm mb-3">
+            Rédacteur spécialisé avec plus de 10 ans d'expérience dans le domaine.
+          </p>
+          
+          <a href="#" class="text-blue-600 hover:text-blue-800 text-sm font-medium">
+            Voir tous ses articles →
+          </a>
+        </div>
+        
+        <!-- Articles similaires -->
+        <div class="bg-white rounded-xl shadow-md p-6 mb-8">
+          <h3 class="text-lg font-semibold text-gray-900 mb-4">
+            Articles similaires
+          </h3>
+          
+          <div class="space-y-4">
+            {similarPosts.map((similarPost) => (
+              <a href={`/blog/${similarPost.slug}`} class="flex group">
+                <div class="flex-shrink-0 w-20 h-20 bg-gray-200 rounded-md overflow-hidden mr-3">
+                  <img 
+                    src={similarPost.data.featuredImage} 
+                    alt={similarPost.data.title}
+                    class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                  />
+                </div>
+                <div>
+                  <h4 class="font-medium text-gray-900 group-hover:text-blue-600 transition-colors duration-300 line-clamp-2">
+                    {similarPost.data.title}
+                  </h4>
+                  <p class="text-sm text-gray-500 mt-1">
+                    {formatDate(similarPost.data.date)}
+                  </p>
+                </div>
+              </a>
+            ))}
+          </div>
+          
+          <a href="/blog" class="inline-block mt-4 text-blue-600 hover:text-blue-800 font-medium">
+            Voir tous les articles →
+          </a>
+        </div>
+        
+        <!-- Tags -->
+        <div class="bg-white rounded-xl shadow-md p-6 mb-8">
+          <h3 class="text-lg font-semibold text-gray-900 mb-4">
+            Tags populaires
+          </h3>
+          
+          <div class="flex flex-wrap gap-2">
+            <a href="#" class="px-3 py-1 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-full text-sm transition-colors duration-300">
+              Conseils
+            </a>
+            <a href="#" class="px-3 py-1 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-full text-sm transition-colors duration-300">
+              Astuces
+            </a>
+            <a href="#" class="px-3 py-1 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-full text-sm transition-colors duration-300">
+              Tendances
+            </a>
+            <a href="#" class="px-3 py-1 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-full text-sm transition-colors duration-300">
+              Innovations
+            </a>
+            <a href="#" class="px-3 py-1 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-full text-sm transition-colors duration-300">
+              Guide
+            </a>
+            <a href="#" class="px-3 py-1 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-full text-sm transition-colors duration-300">
+              Tutoriel
+            </a>
+          </div>
+        </div>
+        
+        <!-- Newsletter -->
+        <div class="bg-blue-50 rounded-xl p-6">
+          <h3 class="text-lg font-semibold text-gray-900 mb-3">
+            Restez informé
+          </h3>
+          
+          <p class="text-gray-700 text-sm mb-4">
+            Abonnez-vous à notre newsletter pour recevoir nos derniers articles et conseils.
+          </p>
+          
+          <form class="space-y-3">
+            <div class="form-group">
+              <input 
+                type="email" 
+                placeholder="Votre email" 
+                class="form-input"
+                required
+              />
+            </div>
+            
+            <button type="submit" class="btn btn-primary w-full">
+              S'abonner
+            </button>
+          </form>
+          
+          <p class="text-xs text-gray-500 mt-3">
+            En vous inscrivant, vous acceptez notre politique de confidentialité.
+          </p>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Section "Vous pourriez aussi aimer" -->
+    <div class="mt-16 pt-12 border-t border-gray-200">
+      <h2 class="text-2xl font-bold text-gray-900 mb-8 text-center">
+        Vous pourriez aussi aimer
+      </h2>
+      
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        {similarPosts.map((relatedPost) => (
+          <article class="bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 overflow-hidden flex flex-col">
+            <a href={`/blog/${relatedPost.slug}`} class="relative block overflow-hidden">
+              <img 
+                src={relatedPost.data.featuredImage} 
+                alt={relatedPost.data.title}
+                class="w-full h-48 object-cover transform hover:scale-105 transition-transform duration-500"
+              />
+            </a>
+            
+            <div class="p-6 flex-grow flex flex-col">
+              <div class="mb-2 text-sm text-gray-500">
+                <time datetime={relatedPost.data.date}>
+                  {formatDate(relatedPost.data.date)}
+                </time>
+              </div>
+              
+              <a href={`/blog/${relatedPost.slug}`} class="block group">
+                <h3 class="text-lg font-semibold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors duration-300 line-clamp-2">
+                  {relatedPost.data.title}
+                </h3>
+              </a>
+              
+              <p class="text-gray-600 text-sm line-clamp-3 mb-4 flex-grow">
+                {relatedPost.data.excerpt}
+              </p>
+              
+              <a 
+                href={`/blog/${relatedPost.slug}`}
+                class="inline-flex items-center text-blue-600 font-medium hover:text-blue-800 transition-colors duration-300 mt-auto text-sm"
+              >
+                Lire la suite
+                <i class="fa-solid fa-arrow-right ml-2 transform group-hover:translate-x-1 transition-transform duration-300"></i>
+              </a>
+            </div>
+          </article>
+        ))}
+      </div>
+    </div>
+    
+    <!-- CTA Newsletter -->
+    <div class="mt-16 bg-blue-50 rounded-xl p-8">
+      <div class="max-w-3xl mx-auto text-center">
+        <h2 class="text-2xl font-bold text-gray-900 mb-4">
+          Ne manquez aucun nouvel article
+        </h2>
+        <p class="text-gray-700 mb-6">
+          Abonnez-vous à notre newsletter et recevez nos derniers articles directement dans votre boîte mail.
+        </p>
+        
+        <form class="flex flex-col sm:flex-row gap-3 max-w-lg mx-auto">
+          <input 
+            type="email" 
+            placeholder="Votre adresse email" 
+            class="flex-grow px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-300"
+            required
+          />
+          <button 
+            type="submit"
+            class="btn btn-primary whitespace-nowrap"
+          >
+            S'abonner
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</BaseLayout>

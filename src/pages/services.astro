@@ -1,0 +1,153 @@
+---
+// src/pages/services.astro
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+// Récupération des services et tri par ordre
+const services = await getCollection('services');
+const sortedServices = services.sort((a, b) => (a.data.order || 0) - (b.data.order || 0));
+
+// Métadonnées SEO
+const title = "Nos Services Professionnels";
+const description = "Découvrez notre gamme complète de services professionnels adaptés à vos besoins. Qualité garantie, intervention rapide et devis gratuit.";
+
+// Préparer les données pour le schéma SEO
+const servicesSchema = {
+  items: [
+    { name: "Accueil", url: "/" },
+    { name: "Nos Services", url: "/services" }
+  ]
+};
+---
+
+<BaseLayout 
+  title={title}
+  description={description}
+  schemaType="BreadcrumbList"
+  schemaData={servicesSchema}
+>
+  <!-- En-tête de page -->
+  <div class="page-header">
+    <div class="page-header-content">
+      <!-- Fil d'Ariane -->
+      <div class="breadcrumbs">
+        <div class="breadcrumbs-item">
+          <a href="/" class="breadcrumbs-link">Accueil</a>
+          <span class="breadcrumbs-separator">
+            <i class="fa-solid fa-chevron-right text-xs"></i>
+          </span>
+        </div>
+        <div class="breadcrumbs-item">
+          <span class="breadcrumbs-current">Nos Services</span>
+        </div>
+      </div>
+      
+      <h1 class="page-title">Nos Services Professionnels</h1>
+      
+      <p class="max-w-3xl text-lg text-gray-700">
+        Découvrez notre gamme complète de services professionnels. Nous intervenons rapidement avec une garantie de qualité sur tous nos travaux.
+      </p>
+    </div>
+  </div>
+  
+  <!-- Liste des services -->
+  <div class="container mx-auto px-4 sm:px-6 lg:px-8 pb-16">
+    <!-- Filtres (optionnel) -->
+    <div class="flex flex-wrap gap-3 mb-10 justify-center">
+      <button class="px-4 py-2 rounded-full bg-blue-600 text-white font-medium">
+        Tous les services
+      </button>
+      <button class="px-4 py-2 rounded-full bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium transition-colors duration-300">
+        Urgences
+      </button>
+      <button class="px-4 py-2 rounded-full bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium transition-colors duration-300">
+        Maintenance
+      </button>
+      <button class="px-4 py-2 rounded-full bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium transition-colors duration-300">
+        Installation
+      </button>
+      <button class="px-4 py-2 rounded-full bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium transition-colors duration-300">
+        Réparation
+      </button>
+    </div>
+    
+    <!-- Grille des services -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      {sortedServices.map((service) => (
+        <a 
+          href={`/services/${service.slug}`}
+          class="card group overflow-hidden h-full flex flex-col"
+        >
+          <div class="relative h-56 overflow-hidden">
+            <img 
+              src={service.data.image} 
+              alt={service.data.title}
+              class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500"
+            />
+            <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
+            <div class="absolute bottom-4 left-4 right-4 flex justify-between items-end">
+              <h3 class="text-xl font-bold text-white group-hover:text-blue-200 transition-colors duration-300">
+                {service.data.title}
+              </h3>
+              
+              <span class="bg-blue-600 text-white text-xs font-bold uppercase px-2 py-1 rounded">
+                Service
+              </span>
+            </div>
+          </div>
+          
+          <div class="p-6 flex-grow flex flex-col">
+            <div class="flex items-center mb-4">
+              <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center mr-3">
+                <i class={`fa-solid fa-${service.data.icon} text-blue-600`}></i>
+              </div>
+              <span class="text-sm font-medium text-blue-600">Service professionnel</span>
+            </div>
+            
+            <p class="text-gray-600 mb-4 flex-grow">
+              {service.data.description}
+            </p>
+            
+            <div class="mt-auto">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center text-blue-600 font-medium group-hover:text-blue-800 transition-colors duration-300">
+                  <span>En savoir plus</span>
+                  <i class="fa-solid fa-arrow-right ml-2 transform group-hover:translate-x-1 transition-transform duration-300"></i>
+                </div>
+                
+                <div class="flex items-center">
+                  <i class="fa-solid fa-phone-alt text-gray-400 mr-2"></i>
+                  <span class="text-sm text-gray-600">Devis gratuit</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </a>
+      ))}
+    </div>
+    
+    <!-- Section CTA -->
+    <div class="mt-16 p-8 bg-blue-50 rounded-2xl shadow-sm">
+      <div class="flex flex-col md:flex-row items-center justify-between">
+        <div class="mb-6 md:mb-0 md:mr-8">
+          <h2 class="text-2xl font-bold text-gray-900 mb-2">
+            Besoin d'aide pour choisir le bon service ?
+          </h2>
+          <p class="text-gray-700">
+            Nos experts sont disponibles pour vous aider à trouver la solution adaptée à vos besoins.
+          </p>
+        </div>
+        
+        <div class="flex flex-col sm:flex-row gap-4">
+          <a href="/contact" class="btn btn-primary">
+            Demander un devis
+          </a>
+          <a href="tel:+33123456789" class="btn btn-outline">
+            <i class="fa-solid fa-phone mr-2"></i>
+            Nous appeler
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</BaseLayout>

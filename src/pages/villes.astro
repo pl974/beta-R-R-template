@@ -1,0 +1,386 @@
+---
+// src/pages/villes.astro
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+// Récupération des villes premium et standard
+const premiumCities = await getCollection('premium');
+const standardCities = await getCollection('villes');
+
+// Tri alphabétique des villes
+const sortedPremiumCities = premiumCities.sort((a, b) => a.data.title.localeCompare(b.data.title));
+const sortedStandardCities = standardCities.sort((a, b) => a.data.title.localeCompare(b.data.title));
+
+// Regrouper les villes par première lettre
+const groupCitiesByFirstLetter = (cities) => {
+  const grouped = {};
+  
+  cities.forEach(city => {
+    const firstLetter = city.data.title.charAt(0).toUpperCase();
+    
+    if (!grouped[firstLetter]) {
+      grouped[firstLetter] = [];
+    }
+    
+    grouped[firstLetter].push(city);
+  });
+  
+  return grouped;
+};
+
+const groupedPremiumCities = groupCitiesByFirstLetter(sortedPremiumCities);
+const groupedStandardCities = groupCitiesByFirstLetter(sortedStandardCities);
+
+// Créer un alphabet pour la navigation
+const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+
+// Métadonnées SEO
+const title = "Nos Zones d'Intervention | Services Professionnels";
+const description = "Découvrez toutes les villes où nous intervenons pour vous offrir nos services professionnels de qualité. Intervention rapide et devis gratuit.";
+
+// Préparer les données pour le schéma SEO
+const breadcrumbSchema = {
+  items: [
+    { name: "Accueil", url: "/" },
+    { name: "Zones d'Intervention", url: "/villes" }
+  ]
+};
+---
+
+<BaseLayout 
+  title={title}
+  description={description}
+  schemaType="BreadcrumbList"
+  schemaData={breadcrumbSchema}
+>
+  <!-- En-tête de page -->
+  <div class="bg-blue-600 text-white py-16">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+      <!-- Fil d'Ariane -->
+      <div class="breadcrumbs text-blue-100 mb-6">
+        <div class="breadcrumbs-item">
+          <a href="/" class="breadcrumbs-link hover:text-white">Accueil</a>
+          <span class="breadcrumbs-separator">
+            <i class="fa-solid fa-chevron-right text-xs"></i>
+          </span>
+        </div>
+        <div class="breadcrumbs-item">
+          <span class="breadcrumbs-current text-white">Zones d'Intervention</span>
+        </div>
+      </div>
+      
+      <h1 class="text-4xl sm:text-5xl font-bold mb-4">
+        Nos Zones d'Intervention
+      </h1>
+      
+      <p class="text-xl text-blue-100 max-w-3xl">
+        Découvrez toutes les villes où nous intervenons pour vous offrir nos services professionnels de qualité.
+      </p>
+    </div>
+  </div>
+  
+  <!-- Contenu principal -->
+  <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <!-- Filtres et recherche -->
+    <div class="mb-10 flex flex-col md:flex-row justify-between items-center">
+      <!-- Navigation alphabétique -->
+      <div class="flex flex-wrap gap-2 mb-4 md:mb-0 justify-center">
+        {alphabet.map(letter => (
+          <a 
+            href={`#${letter}`} 
+            class={`w-8 h-8 flex items-center justify-center rounded-full text-sm font-medium transition-colors duration-300
+              ${(groupedPremiumCities[letter] || groupedStandardCities[letter]) 
+                ? 'bg-blue-600 text-white hover:bg-blue-700' 
+                : 'bg-gray-200 text-gray-500 cursor-default'}`}
+          >
+            {letter}
+          </a>
+        ))}
+      </div>
+      
+      <!-- Barre de recherche -->
+      <div class="relative w-full md:w-64">
+        <input 
+          type="text" 
+          id="city-search"
+          placeholder="Rechercher une ville..." 
+          class="w-full px-4 py-2 pr-10 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-300"
+        />
+        <button class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-blue-600 transition-colors duration-300">
+          <i class="fa-solid fa-search"></i>
+        </button>
+      </div>
+    </div>
+    
+    <!-- Intro de la page -->
+    <div class="mb-12 bg-gray-50 rounded-xl p-6 md:p-8 shadow-sm">
+      <div class="flex flex-col md:flex-row gap-8 items-center">
+        <div class="md:w-1/3">
+          <img 
+            src="/images/map-france.svg" 
+            alt="Carte de France" 
+            class="w-full h-auto max-w-xs mx-auto"
+          />
+        </div>
+        
+        <div class="md:w-2/3">
+          <h2 class="text-2xl font-bold text-gray-900 mb-4">
+            Intervention rapide dans toute votre région
+          </h2>
+          
+          <p class="text-gray-700 mb-4">
+            Nous intervenons dans de nombreuses villes pour vous offrir nos services professionnels. Notre équipe se déplace rapidement pour répondre à vos besoins, que ce soit pour une urgence ou un projet planifié.
+          </p>
+          
+          <p class="text-gray-700 mb-4">
+            Si votre ville n'apparaît pas dans la liste, n'hésitez pas à nous contacter. En fonction de votre localisation, nous pourrons peut-être tout de même intervenir chez vous.
+          </p>
+          
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-6">
+            <div class="flex items-center">
+              <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center mr-3">
+                <i class="fa-solid fa-truck text-blue-600"></i>
+              </div>
+              <span class="text-gray-800">Intervention rapide</span>
+            </div>
+            
+            <div class="flex items-center">
+              <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center mr-3">
+                <i class="fa-solid fa-calendar-check text-blue-600"></i>
+              </div>
+              <span class="text-gray-800">Sur rendez-vous</span>
+            </div>
+            
+            <div class="flex items-center">
+              <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center mr-3">
+                <i class="fa-solid fa-headset text-blue-600"></i>
+              </div>
+              <span class="text-gray-800">7j/7 - 24h/24</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Villes Premium -->
+    <div class="mb-16">
+      <h2 class="text-2xl font-bold text-gray-900 mb-6 flex items-center">
+        <i class="fa-solid fa-star text-yellow-500 mr-2"></i>
+        Villes Principales
+      </h2>
+      
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        {Object.entries(sortedPremiumCities).map(([_, city]) => (
+          <a 
+            href={`/villes/premium/${city.slug}`}
+            class="bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 overflow-hidden flex flex-col group city-card"
+            data-city-name={city.data.title.toLowerCase()}
+          >
+            <div class="relative h-48 overflow-hidden">
+              <img 
+                src={city.data.image} 
+                alt={city.data.title}
+                class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500"
+              />
+              <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
+              <div class="absolute top-3 right-3 bg-yellow-500 text-white text-xs font-bold uppercase px-2 py-1 rounded">
+                Premium
+              </div>
+              <div class="absolute bottom-4 left-4">
+                <h3 class="text-xl font-bold text-white group-hover:text-blue-200 transition-colors duration-300">
+                  {city.data.title}
+                </h3>
+              </div>
+            </div>
+            
+            <div class="p-4 flex-grow flex flex-col">
+              <p class="text-gray-600 text-sm line-clamp-2 mb-3 flex-grow">
+                {city.data.description}
+              </p>
+              
+              <div class="flex items-center text-blue-600 font-medium group-hover:text-blue-800 transition-colors duration-300">
+                <span>Voir les services</span>
+                <i class="fa-solid fa-arrow-right ml-2 transform group-hover:translate-x-1 transition-transform duration-300"></i>
+              </div>
+            </div>
+          </a>
+        ))}
+      </div>
+    </div>
+    
+    <!-- Toutes les villes -->
+    <div>
+      <h2 class="text-2xl font-bold text-gray-900 mb-6">
+        Toutes nos zones d'intervention
+      </h2>
+      
+      <div class="mb-8 bg-white rounded-xl shadow-md p-6">
+        <p class="text-gray-700">
+          Nous intervenons dans de nombreuses villes secondaires autour de nos zones principales. Voici la liste complète de toutes les villes où nous proposons nos services. Si votre ville n'est pas listée, contactez-nous pour vérifier si nous pouvons intervenir chez vous.
+        </p>
+      </div>
+      
+      <!-- Liste alphabétique des villes -->
+      <div id="city-list" class="space-y-8">
+        {alphabet.map(letter => {
+          const premiumCitiesForLetter = groupedPremiumCities[letter] || [];
+          const standardCitiesForLetter = groupedStandardCities[letter] || [];
+          
+          // Ne montrer que les lettres qui ont des villes
+          if (premiumCitiesForLetter.length === 0 && standardCitiesForLetter.length === 0) {
+            return null;
+          }
+          
+          return (
+            <div id={letter} class="city-letter-group">
+              <h3 class="text-xl font-bold text-gray-900 mb-4 border-b border-gray-200 pb-2">
+                {letter}
+              </h3>
+              
+              <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                {/* Villes premium pour cette lettre */}
+                {premiumCitiesForLetter.map(city => (
+                  <a 
+                    href={`/villes/premium/${city.slug}`}
+                    class="flex items-center p-3 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors duration-300 city-item"
+                    data-city-name={city.data.title.toLowerCase()}
+                  >
+                    <i class="fa-solid fa-star text-yellow-500 mr-2"></i>
+                    <span class="font-medium">{city.data.title}</span>
+                  </a>
+                ))}
+                
+                {/* Villes standard pour cette lettre */}
+                {standardCitiesForLetter.map(city => (
+                  <a 
+                    href={`/villes/${city.slug}`}
+                    class="flex items-center p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors duration-300 city-item"
+                    data-city-name={city.data.title.toLowerCase()}
+                  >
+                    <i class="fa-solid fa-location-dot text-blue-600 mr-2"></i>
+                    <span>{city.data.title}</span>
+                  </a>
+                ))}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+      
+      <!-- Message "Aucun résultat" (caché par défaut) -->
+      <div id="no-results" class="hidden text-center py-8">
+        <div class="text-gray-400 mb-3">
+          <i class="fa-solid fa-search fa-3x"></i>
+        </div>
+        <h3 class="text-xl font-semibold text-gray-900 mb-2">
+          Aucune ville trouvée
+        </h3>
+        <p class="text-gray-700">
+          Aucune ville ne correspond à votre recherche. Essayez avec un autre terme ou contactez-nous.
+        </p>
+      </div>
+    </div>
+    
+    <!-- Section CTA -->
+    <div class="mt-16 p-8 bg-blue-50 rounded-2xl shadow-sm">
+      <div class="flex flex-col md:flex-row items-center justify-between">
+        <div class="mb-6 md:mb-0 md:mr-8">
+          <h2 class="text-2xl font-bold text-gray-900 mb-2">
+            Besoin d'un service dans votre ville ?
+          </h2>
+          <p class="text-gray-700">
+            Contactez-nous pour vérifier notre disponibilité et obtenir un devis gratuit.
+          </p>
+        </div>
+        
+        <div class="flex flex-col sm:flex-row gap-4">
+          <a href="/contact" class="btn btn-primary">
+            Demander un devis
+          </a>
+          <a href="tel:+33123456789" class="btn btn-outline">
+            <i class="fa-solid fa-phone mr-2"></i>
+            Nous appeler
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</BaseLayout>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    // Fonctionnalité de recherche de villes
+    const searchInput = document.getElementById('city-search');
+    const cityItems = document.querySelectorAll('.city-item, .city-card');
+    const letterGroups = document.querySelectorAll('.city-letter-group');
+    const noResults = document.getElementById('no-results');
+    
+    searchInput.addEventListener('input', () => {
+      const searchTerm = searchInput.value.toLowerCase().trim();
+      let hasResults = false;
+      
+      // Cacher les groupes de lettres par défaut
+      letterGroups.forEach(group => {
+        group.classList.add('hidden');
+      });
+      
+      // Filtrer les villes
+      cityItems.forEach(item => {
+        const cityName = item.getAttribute('data-city-name');
+        
+        if (cityName.includes(searchTerm)) {
+          item.classList.remove('hidden');
+          
+          // Montrer le groupe de lettres correspondant
+          const letterGroup = item.closest('.city-letter-group');
+          if (letterGroup) {
+            letterGroup.classList.remove('hidden');
+          }
+          
+          hasResults = true;
+        } else {
+          item.classList.add('hidden');
+        }
+      });
+      
+      // Afficher/cacher le message "Aucun résultat"
+      if (hasResults) {
+        noResults.classList.add('hidden');
+      } else {
+        noResults.classList.remove('hidden');
+      }
+      
+      // Si la recherche est vide, afficher tous les éléments
+      if (searchTerm === '') {
+        cityItems.forEach(item => {
+          item.classList.remove('hidden');
+        });
+        
+        letterGroups.forEach(group => {
+          group.classList.remove('hidden');
+        });
+        
+        noResults.classList.add('hidden');
+      }
+    });
+    
+    // Smooth scroll pour la navigation alphabétique
+    const alphabetLinks = document.querySelectorAll('a[href^="#"]');
+    
+    alphabetLinks.forEach(link => {
+      link.addEventListener('click', (e) => {
+        const targetId = link.getAttribute('href').substring(1);
+        const targetElement = document.getElementById(targetId);
+        
+        if (targetElement) {
+          e.preventDefault();
+          
+          window.scrollTo({
+            top: targetElement.offsetTop - 100,
+            behavior: 'smooth'
+          });
+        }
+      });
+    });
+  });
+</script>

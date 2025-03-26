@@ -1,0 +1,183 @@
+---
+// src/pages/villes/premium/[ville].astro
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+
+// Cette page réutilise le même template que la page ville standard, 
+// mais avec la propriété isPremium à true pour différencier les villes premium
+
+// Fonction pour générer les chemins statiques
+export async function getStaticPaths() {
+  const premiumVilles = await getCollection('villes/premium');
+  
+  return premiumVilles.map(ville => {
+    return {
+      params: { ville: ville.slug },
+      props: { ville, isPremium: true }
+    };
+  });
+}
+
+// Props
+const { ville, isPremium } = Astro.props;
+const { Content } = await ville.render();
+
+// Récupérer les services
+const services = await getCollection('services');
+const sortedServices = services.sort((a, b) => (a.data.order || 0) - (b.data.order || 0));
+
+// Récupérer des villes proches (exemple simple - à personnaliser selon besoin)
+const allPremiumVilles = await getCollection('villes/premium');
+const nearbyVilles = allPremiumVilles
+  .filter(v => v.slug !== ville.slug)
+  .sort(() => Math.random() - 0.5)
+  .slice(0, 4);
+
+// Métadonnées SEO
+const { title, description, image } = ville.data;
+const profession = ville.data.seo?.profession || "Service Professionnel";
+const seo = ville.data.seo || {
+  metaTitle: `${profession} ${title}`,
+  metaDescription: description
+};
+
+// Préparer les données pour le schéma SEO
+const professionalServiceSchema = {
+  name: `${profession} ${title}`,
+  url: Astro.url.href,
+  image: image,
+  telephone: "+33123456789",
+  address: {
+    street: "123 Rue Exemple",
+    city: title,
+    postalCode: "75000"
+  },
+  geo: {
+    latitude: "48.8566",
+    longitude: "2.3522"
+  },
+  openingHours: [
+    { dayOfWeek: "Monday", opens: "08:00", closes: "18:00" },
+    { dayOfWeek: "Tuesday", opens: "08:00", closes: "18:00" },
+    { dayOfWeek: "Wednesday", opens: "08:00", closes: "18:00" },
+    { dayOfWeek: "Thursday", opens: "08:00", closes: "18:00" },
+    { dayOfWeek: "Friday", opens: "08:00", closes: "18:00" },
+    { dayOfWeek: "Saturday", opens: "09:00", closes: "16:00" }
+  ],
+  services: sortedServices.slice(0, 5).map(service => ({
+    name: service.data.title,
+    description: service.data.description
+  })),
+  reviews: [
+    {
+      author: "Jean Dupont",
+      rating: 5,
+      text: "Excellent service, rapide et professionnel. Je recommande vivement !"
+    },
+    {
+      author: "Marie Martin",
+      rating: 4.5,
+      text: "Très satisfaite de la prestation. Personnel compétent et tarifs raisonnables."
+    }
+  ],
+  socialProfiles: [
+    "https://facebook.com/entreprise",
+    "https://twitter.com/entreprise",
+    "https://instagram.com/entreprise",
+    "https://linkedin.com/company/entreprise"
+  ]
+};
+
+const breadcrumbSchema = {
+  items: [
+    { name: "Accueil", url: "/" },
+    { name: "Zones d'intervention", url: "/villes" },
+    { name: title, url: `/villes/premium/${ville.slug}` }
+  ]
+};
+---
+
+<BaseLayout 
+  title={seo.metaTitle}
+  description={seo.metaDescription}
+  city={title}
+  profession={profession}
+  ogImage={image}
+  canonicalUrl={Astro.url.href}
+  schemaType="ProfessionalService"
+  schemaData={professionalServiceSchema}
+>
+  <!-- En-tête de page -->
+  <div class="relative bg-cover bg-center py-24" style={`background-image: url(${image});`}>
+    <div class="absolute inset-0 bg-blue-900/70"></div>
+    
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+      <!-- Fil d'Ariane -->
+      <div class="breadcrumbs text-blue-100 mb-6">
+        <div class="breadcrumbs-item">
+          <a href="/" class="breadcrumbs-link hover:text-white">Accueil</a>
+          <span class="breadcrumbs-separator">
+            <i class="fa-solid fa-chevron-right text-xs"></i>
+          </span>
+        </div>
+        <div class="breadcrumbs-item">
+          <a href="/villes" class="breadcrumbs-link hover:text-white">Zones d'intervention</a>
+          <span class="breadcrumbs-separator">
+            <i class="fa-solid fa-chevron-right text-xs"></i>
+          </span>
+        </div>
+        <div class="breadcrumbs-item">
+          <span class="breadcrumbs-current text-white">{title}</span>
+        </div>
+      </div>
+      
+      {/* Badge Premium */}
+      <div class="inline-flex items-center bg-yellow-500 text-white text-sm font-bold px-3 py-1 rounded-full mb-4">
+        <i class="fa-solid fa-star mr-1"></i>
+        Zone Premium
+      </div>
+      
+      <h1 class="text-4xl sm:text-5xl font-bold text-white mb-4">
+        {profession} {title}
+      </h1>
+      
+      <p class="text-xl text-blue-100 max-w-3xl mb-8">
+        {description}
+      </p>
+      
+      <div class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
+        <a 
+          href="/contact" 
+          class="inline-block px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transform hover:scale-105 transition-all duration-300 text-center"
+        >
+          Demander un devis gratuit
+        </a>
+        
+        <a 
+          href="tel:+33123456789" 
+          class="inline-flex items-center justify-center px-6 py-3 bg-transparent border-2 border-white text-white font-semibold rounded-lg hover:bg-white hover:text-blue-900 transition-all duration-300 text-center"
+        >
+          <i class="fa-solid fa-phone mr-2"></i>
+          Appeler maintenant
+        </a>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Le reste du contenu est identique à la page ville standard -->
+  <!-- Voir le fichier src/pages/villes/[ville].astro pour le contenu complet -->
+  
+  <!-- Contenu principal -->
+  <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <!-- ...contenu de la page ici... -->
+    <div class="rich-text">
+      <Content />
+    </div>
+    
+    <!-- ...le reste du contenu ici... -->
+  </div>
+</BaseLayout>
+
+<script>
+  // Les scripts sont identiques à la page ville standard
+</script>

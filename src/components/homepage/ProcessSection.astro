@@ -1,0 +1,117 @@
+---
+// src/components/homepage/ProcessSection.astro
+// Composant pour la section processus d'intervention
+
+interface ProcessStep {
+  title: string;
+  description: string;
+  icon: string;
+  stepNumber: number;
+}
+
+interface Props {
+  title?: string;
+  description?: string;
+  steps?: ProcessStep[];
+}
+
+const {
+  title = "Notre Processus d'Intervention",
+  description = "Découvrez notre méthode de travail professionnelle",
+  steps = []
+} = Astro.props;
+
+const sortedSteps = steps ? [...steps].sort((a, b) => a.stepNumber - b.stepNumber) : [];
+---
+
+<section class="py-16 bg-gray-50">
+  <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="text-center max-w-3xl mx-auto mb-12">
+      <h2 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
+        {title}
+      </h2>
+      <p class="text-lg text-gray-700">
+        {description}
+      </p>
+      <div class="w-20 h-1 bg-blue-600 mx-auto mt-6"></div>
+    </div>
+    
+    <!-- Processus -->
+    <div class="mt-16">
+      <div class="hidden md:block relative pb-16">
+        <!-- Ligne de connexion (visible uniquement sur les écrans md et plus) -->
+        <div class="absolute top-1/2 left-1/2 w-full h-1 bg-blue-200 -translate-x-1/2 -translate-y-1/2 z-0"></div>
+        
+        {sortedSteps.length > 0 && <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 relative z-10">
+          {sortedSteps.map((step, index) => (
+            <div class="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-shadow duration-300 relative flex flex-col items-center text-center">
+              <!-- Numéro d'étape -->
+              <div class="absolute -top-6 w-12 h-12 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold text-xl shadow-md">
+                {step.stepNumber}
+              </div>
+              
+              <!-- Icône -->
+              <div class="w-16 h-16 rounded-full bg-blue-100 flex items-center justify-center mt-6 mb-4">
+                <i class={`fa-solid fa-${step.icon} text-blue-600 text-2xl`}></i>
+              </div>
+              
+              <!-- Contenu -->
+              <h3 class="text-xl font-semibold text-gray-900 mb-3">
+                {step.title}
+              </h3>
+              
+              <p class="text-gray-600 flex-grow">
+                {step.description}
+              </p>
+              
+              <!-- Flèche de connexion (sauf pour la dernière étape) -->
+              {index < sortedSteps.length - 1 && (
+                <div class="hidden md:block absolute right-0 top-1/2 transform translate-x-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center z-20">
+                  <i class="fa-solid fa-chevron-right text-white"></i>
+                </div>
+              )}
+            </div>
+          ))}
+        </div>}
+      </div>
+      
+      <!-- Version mobile (visible uniquement sur les petits écrans) -->
+      <div class="md:hidden space-y-8">
+        {sortedSteps?.map((step) => (
+          <div class="bg-white rounded-xl p-6 shadow-lg flex">
+            <div class="flex-shrink-0 mr-5">
+              <div class="w-12 h-12 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold text-xl shadow-md mb-3">
+                {step.stepNumber}
+              </div>
+              
+              <div class="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center">
+                <i class={`fa-solid fa-${step.icon} text-blue-600 text-xl`}></i>
+              </div>
+            </div>
+            
+            <div>
+              <h3 class="text-xl font-semibold text-gray-900 mb-2">
+                {step.title}
+              </h3>
+              
+              <p class="text-gray-600">
+                {step.description}
+              </p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+    
+    <!-- CTA -->
+    <div class="text-center mt-12">
+      <a 
+        href="/contact" 
+        class="inline-flex items-center px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors duration-300"
+      >
+        Demander un devis
+        <i class="fa-solid fa-angle-right ml-2"></i>
+      </a>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,407 @@
+---
+// src/pages/contact.astro
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+// Métadonnées SEO
+const title = "Contactez-nous | Devis Gratuit et Sans Engagement";
+const description = "Besoin d'un service professionnel ? Contactez-nous pour un devis gratuit et sans engagement. Notre équipe est à votre écoute pour répondre à toutes vos questions.";
+
+// Préparer les données pour le schéma SEO
+const breadcrumbSchema = {
+  items: [
+    { name: "Accueil", url: "/" },
+    { name: "Contact", url: "/contact" }
+  ]
+};
+---
+
+<BaseLayout 
+  title={title}
+  description={description}
+  schemaType="BreadcrumbList"
+  schemaData={breadcrumbSchema}
+>
+  <!-- En-tête de page -->
+  <div class="bg-blue-600 text-white py-12">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+      <!-- Fil d'Ariane -->
+      <div class="breadcrumbs text-blue-100 mb-6">
+        <div class="breadcrumbs-item">
+          <a href="/" class="breadcrumbs-link hover:text-white">Accueil</a>
+          <span class="breadcrumbs-separator">
+            <i class="fa-solid fa-chevron-right text-xs"></i>
+          </span>
+        </div>
+        <div class="breadcrumbs-item">
+          <span class="breadcrumbs-current text-white">Contact</span>
+        </div>
+      </div>
+      
+      <h1 class="text-3xl sm:text-4xl lg:text-5xl font-bold mb-4">
+        Contactez-nous
+      </h1>
+      
+      <p class="text-xl text-blue-100 max-w-3xl">
+        Besoin d'un service professionnel ? Notre équipe est à votre écoute pour répondre à toutes vos questions.
+      </p>
+    </div>
+  </div>
+  
+  <!-- Contenu principal -->
+  <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <!-- Formulaire de contact (occupe 2 colonnes sur grand écran) -->
+      <div class="lg:col-span-2">
+        <div class="bg-white rounded-xl shadow-md p-6 md:p-8">
+          <h2 class="text-2xl font-bold text-gray-900 mb-6">
+            Envoyez-nous un message
+          </h2>
+          
+          <form id="contact-form" class="space-y-6">
+            <!-- Nom et prénom -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              <div class="form-group">
+                <label for="firstName" class="form-label">Prénom*</label>
+                <input type="text" id="firstName" name="firstName" class="form-input" required>
+              </div>
+              
+              <div class="form-group">
+                <label for="lastName" class="form-label">Nom*</label>
+                <input type="text" id="lastName" name="lastName" class="form-input" required>
+              </div>
+            </div>
+            
+            <!-- Email et téléphone -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              <div class="form-group">
+                <label for="email" class="form-label">Email*</label>
+                <input type="email" id="email" name="email" class="form-input" required>
+              </div>
+              
+              <div class="form-group">
+                <label for="phone" class="form-label">Téléphone*</label>
+                <input type="tel" id="phone" name="phone" class="form-input" required>
+              </div>
+            </div>
+            
+            <!-- Ville et service -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              <div class="form-group">
+                <label for="city" class="form-label">Ville*</label>
+                <input type="text" id="city" name="city" class="form-input" required>
+              </div>
+              
+              <div class="form-group">
+                <label for="service" class="form-label">Service souhaité*</label>
+                <select id="service" name="service" class="form-select" required>
+                  <option value="">Sélectionnez un service</option>
+                  <option value="service1">Service 1</option>
+                  <option value="service2">Service 2</option>
+                  <option value="service3">Service 3</option>
+                  <option value="service4">Service 4</option>
+                  <option value="service5">Service 5</option>
+                  <option value="other">Autre</option>
+                </select>
+              </div>
+            </div>
+            
+            <!-- Type de demande et urgence -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              <div class="form-group">
+                <label for="requestType" class="form-label">Type de demande*</label>
+                <select id="requestType" name="requestType" class="form-select" required>
+                  <option value="">Sélectionnez le type</option>
+                  <option value="quote">Demande de devis</option>
+                  <option value="info">Demande d'informations</option>
+                  <option value="appointment">Prise de rendez-vous</option>
+                  <option value="other">Autre</option>
+                </select>
+              </div>
+              
+              <div class="form-group">
+                <label for="urgency" class="form-label">Niveau d'urgence</label>
+                <select id="urgency" name="urgency" class="form-select">
+                  <option value="normal">Normal</option>
+                  <option value="urgent">Urgent</option>
+                  <option value="very-urgent">Très urgent</option>
+                </select>
+              </div>
+            </div>
+            
+            <!-- Message -->
+            <div class="form-group">
+              <label for="message" class="form-label">Votre message*</label>
+              <textarea id="message" name="message" class="form-textarea" rows="5" required></textarea>
+            </div>
+            
+            <!-- Consentement RGPD -->
+            <div class="form-group">
+              <label class="flex items-start">
+                <input type="checkbox" name="gdprConsent" class="form-checkbox mt-1" required>
+                <span class="ml-2 text-sm text-gray-700">
+                  J'accepte que mes données soient traitées conformément à la politique de confidentialité. Les champs marqués d'un astérisque (*) sont obligatoires.
+                </span>
+              </label>
+            </div>
+            
+            <!-- Messages de validation/erreur -->
+            <div id="form-message" class="hidden p-4 rounded-md mb-4"></div>
+            
+            <!-- Bouton d'envoi -->
+            <div class="flex justify-end">
+              <button type="submit" class="btn btn-primary">
+                <i class="fa-solid fa-paper-plane mr-2"></i>
+                Envoyer le message
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+      
+      <!-- Coordonnées et infos -->
+      <div>
+        <!-- Carte de coordonnées -->
+        <div class="bg-white rounded-xl shadow-md p-6 md:p-8 mb-8">
+          <h2 class="text-2xl font-bold text-gray-900 mb-6">
+            Nos coordonnées
+          </h2>
+          
+          <div class="space-y-4">
+            <div class="flex items-start">
+              <div class="flex-shrink-0 w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center mr-4">
+                <i class="fa-solid fa-location-dot text-blue-600"></i>
+              </div>
+              <div>
+                <h3 class="text-lg font-semibold text-gray-900 mb-1">
+                  Adresse
+                </h3>
+                <p class="text-gray-700">
+                  123 Rue Exemple<br>
+                  75000 Paris<br>
+                  France
+                </p>
+              </div>
+            </div>
+            
+            <div class="flex items-start">
+              <div class="flex-shrink-0 w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center mr-4">
+                <i class="fa-solid fa-phone text-blue-600"></i>
+              </div>
+              <div>
+                <h3 class="text-lg font-semibold text-gray-900 mb-1">
+                  Téléphone
+                </h3>
+                <p class="text-gray-700">
+                  <a href="tel:+33123456789" class="hover:text-blue-600">
+                    01 23 45 67 89
+                  </a>
+                </p>
+              </div>
+            </div>
+            
+            <div class="flex items-start">
+              <div class="flex-shrink-0 w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center mr-4">
+                <i class="fa-solid fa-envelope text-blue-600"></i>
+              </div>
+              <div>
+                <h3 class="text-lg font-semibold text-gray-900 mb-1">
+                  Email
+                </h3>
+                <p class="text-gray-700">
+                  <a href="mailto:contact@exemple.fr" class="hover:text-blue-600">
+                    contact@exemple.fr
+                  </a>
+                </p>
+              </div>
+            </div>
+            
+            <div class="flex items-start">
+              <div class="flex-shrink-0 w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center mr-4">
+                <i class="fa-solid fa-clock text-blue-600"></i>
+              </div>
+              <div>
+                <h3 class="text-lg font-semibold text-gray-900 mb-1">
+                  Horaires d'ouverture
+                </h3>
+                <ul class="text-gray-700 space-y-1">
+                  <li class="flex justify-between">
+                    <span>Lundi - Vendredi:</span>
+                    <span>8h - 18h</span>
+                  </li>
+                  <li class="flex justify-between">
+                    <span>Samedi:</span>
+                    <span>9h - 16h</span>
+                  </li>
+                  <li class="flex justify-between">
+                    <span>Dimanche:</span>
+                    <span>Fermé</span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Réseaux sociaux -->
+          <div class="mt-6 pt-6 border-t border-gray-200">
+            <h3 class="text-lg font-semibold text-gray-900 mb-3">
+              Suivez-nous
+            </h3>
+            <div class="flex space-x-4">
+              <a href="#" class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 hover:bg-blue-600 hover:text-white transition-colors duration-300">
+                <i class="fa-brands fa-facebook-f"></i>
+              </a>
+              <a href="#" class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 hover:bg-blue-600 hover:text-white transition-colors duration-300">
+                <i class="fa-brands fa-twitter"></i>
+              </a>
+              <a href="#" class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 hover:bg-blue-600 hover:text-white transition-colors duration-300">
+                <i class="fa-brands fa-instagram"></i>
+              </a>
+              <a href="#" class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 hover:bg-blue-600 hover:text-white transition-colors duration-300">
+                <i class="fa-brands fa-linkedin-in"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Carte -->
+        <div class="bg-white rounded-xl shadow-md overflow-hidden">
+          <div class="aspect-w-16 aspect-h-12">
+            <iframe 
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2624.9916256937595!2d2.2922926156742845!3d48.85837007928754!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x47e66e2964e34e2d%3A0x8ddca9ee380ef7e0!2sEiffel%20Tower!5e0!3m2!1sen!2sfr!4v1647541449911!5m2!1sen!2sfr" 
+              style="border:0;" 
+              allowfullscreen="" 
+              loading="lazy"
+              class="w-full h-full"
+            ></iframe>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Section FAQ -->
+    <div class="mt-16">
+      <h2 class="text-2xl font-bold text-gray-900 mb-6 text-center">
+        Questions fréquentes
+      </h2>
+      
+      <div class="max-w-3xl mx-auto">
+        <div class="space-y-4">
+          <div class="border border-gray-200 rounded-lg overflow-hidden">
+            <button class="w-full px-6 py-4 text-left flex justify-between items-center bg-gray-50 hover:bg-gray-100 transition-colors duration-300 focus:outline-none contact-faq-question" data-index="0">
+              <span class="font-semibold">Comment obtenir un devis gratuit ?</span>
+              <i class="fa-solid fa-chevron-down text-blue-600 transform transition-transform duration-300"></i>
+            </button>
+            <div class="contact-faq-answer px-6 py-4 hidden" data-index="0">
+              <p class="text-gray-700">
+                Vous pouvez obtenir un devis gratuit en remplissant notre formulaire de contact en ligne, en nous appelant directement au 01 23 45 67 89 ou en nous envoyant un email à contact@exemple.fr. Nous vous répondrons dans les plus brefs délais.
+              </p>
+            </div>
+          </div>
+          
+          <div class="border border-gray-200 rounded-lg overflow-hidden">
+            <button class="w-full px-6 py-4 text-left flex justify-between items-center bg-gray-50 hover:bg-gray-100 transition-colors duration-300 focus:outline-none contact-faq-question" data-index="1">
+              <span class="font-semibold">Quels sont vos délais d'intervention ?</span>
+              <i class="fa-solid fa-chevron-down text-blue-600 transform transition-transform duration-300"></i>
+            </button>
+            <div class="contact-faq-answer px-6 py-4 hidden" data-index="1">
+              <p class="text-gray-700">
+                Nos délais d'intervention varient en fonction de la nature du service demandé et de notre planning. En général, nous intervenons sous 24 à 48 heures pour les demandes standard, et dans l'heure pour les urgences. N'hésitez pas à nous préciser votre niveau d'urgence lors de votre demande.
+              </p>
+            </div>
+          </div>
+          
+          <div class="border border-gray-200 rounded-lg overflow-hidden">
+            <button class="w-full px-6 py-4 text-left flex justify-between items-center bg-gray-50 hover:bg-gray-100 transition-colors duration-300 focus:outline-none contact-faq-question" data-index="2">
+              <span class="font-semibold">Quelles sont les zones géographiques que vous couvrez ?</span>
+              <i class="fa-solid fa-chevron-down text-blue-600 transform transition-transform duration-300"></i>
+            </button>
+            <div class="contact-faq-answer px-6 py-4 hidden" data-index="2">
+              <p class="text-gray-700">
+                Nous intervenons principalement dans la ville de [Ville Principale] et ses environs, dans un rayon de 50 km. Nous couvrons également plusieurs villes secondaires. Consultez notre liste de zones d'intervention sur notre site ou contactez-nous pour vérifier si nous intervenons dans votre secteur.
+              </p>
+            </div>
+          </div>
+          
+          <div class="border border-gray-200 rounded-lg overflow-hidden">
+            <button class="w-full px-6 py-4 text-left flex justify-between items-center bg-gray-50 hover:bg-gray-100 transition-colors duration-300 focus:outline-none contact-faq-question" data-index="3">
+              <span class="font-semibold">Acceptez-vous les paiements par carte bancaire ?</span>
+              <i class="fa-solid fa-chevron-down text-blue-600 transform transition-transform duration-300"></i>
+            </button>
+            <div class="contact-faq-answer px-6 py-4 hidden" data-index="3">
+              <p class="text-gray-700">
+                Oui, nous acceptons plusieurs modes de paiement, dont la carte bancaire, les espèces, les chèques, et les virements bancaires. Nos techniciens sont équipés de terminaux de paiement mobiles pour vous permettre de régler par carte directement sur place.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</BaseLayout>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    // Gestion du formulaire de contact
+    const contactForm = document.getElementById('contact-form');
+    const formMessage = document.getElementById('form-message');
+    
+    if (contactForm) {
+      contactForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        
+        // Simuler l'envoi du formulaire
+        formMessage.classList.remove('hidden', 'bg-red-100', 'text-red-700', 'bg-green-100', 'text-green-700');
+        formMessage.classList.add('bg-blue-100', 'text-blue-700');
+        formMessage.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i> Envoi en cours...';
+        
+        // Simuler un délai de traitement
+        setTimeout(() => {
+          formMessage.classList.remove('bg-blue-100', 'text-blue-700');
+          formMessage.classList.add('bg-green-100', 'text-green-700');
+          formMessage.innerHTML = '<i class="fa-solid fa-check-circle mr-2"></i> Votre message a été envoyé avec succès. Nous vous répondrons dans les plus brefs délais.';
+          
+          // Réinitialiser le formulaire
+          contactForm.reset();
+        }, 1500);
+      });
+    }
+    
+    // Gestion des FAQ
+    const questions = document.querySelectorAll('.contact-faq-question');
+    
+    questions.forEach(question => {
+      question.addEventListener('click', () => {
+        const index = question.getAttribute('data-index');
+        const answer = document.querySelector(`.contact-faq-answer[data-index="${index}"]`);
+        const icon = question.querySelector('i');
+        
+        // Fermer toutes les autres réponses
+        questions.forEach(q => {
+          if (q !== question) {
+            const idx = q.getAttribute('data-index');
+            const ans = document.querySelector(`.contact-faq-answer[data-index="${idx}"]`);
+            const icn = q.querySelector('i');
+            
+            ans.classList.add('hidden');
+            icn.style.transform = 'rotate(0deg)';
+          }
+        });
+        
+        // Ouvrir/fermer la réponse actuelle
+        answer.classList.toggle('hidden');
+        icon.style.transform = answer.classList.contains('hidden') ? 'rotate(0deg)' : 'rotate(-180deg)';
+      });
+    });
+    
+    // Ouvrir la première question par défaut
+    if (questions.length > 0) {
+      const firstQuestion = questions[0];
+      const index = firstQuestion.getAttribute('data-index');
+      const answer = document.querySelector(`.contact-faq-answer[data-index="${index}"]`);
+      const icon = firstQuestion.querySelector('i');
+      
+      answer.classList.remove('hidden');
+      icon.style.transform = 'rotate(-180deg)';
+    }
+  });
+</script>

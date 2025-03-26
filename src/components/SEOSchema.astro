@@ -1,0 +1,204 @@
+---
+// src/components/SEOSchema.astro
+// Composant pour générer les schémas SEO (Schema.org)
+
+interface Props {
+  type: string;
+  data: any;
+}
+
+const { type, data } = Astro.props;
+
+// Génération du schéma en fonction du type
+let schema: any = {};
+
+switch (type) {
+  case 'LocalBusiness':
+    schema = {
+      "@context": "https://schema.org",
+      "@type": "LocalBusiness",
+      "@id": data.url,
+      "name": data.name,
+      "image": data.image,
+      "url": data.url,
+      "telephone": data.telephone,
+      "priceRange": data.priceRange || "€€",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": data.address.street,
+        "addressLocality": data.address.city,
+        "postalCode": data.address.postalCode,
+        "addressCountry": "FR"
+      },
+      "geo": {
+        "@type": "GeoCoordinates",
+        "latitude": data.geo?.latitude,
+        "longitude": data.geo?.longitude
+      },
+      "openingHoursSpecification": data.openingHours.map((hour: any) => ({
+        "@type": "OpeningHoursSpecification",
+        "dayOfWeek": hour.dayOfWeek,
+        "opens": hour.opens,
+        "closes": hour.closes
+      })),
+      "sameAs": data.socialProfiles
+    };
+    break;
+
+  case 'Service':
+    schema = {
+      "@context": "https://schema.org",
+      "@type": "Service",
+      "name": data.name,
+      "description": data.description,
+      "provider": {
+        "@type": "LocalBusiness",
+        "name": data.provider.name,
+        "url": data.provider.url
+      },
+      "areaServed": {
+        "@type": "City",
+        "name": data.areaServed
+      },
+      "offers": {
+        "@type": "Offer",
+        "price": data.price,
+        "priceCurrency": "EUR"
+      }
+    };
+    break;
+
+  case 'FAQPage':
+    schema = {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": data.questions.map((item: any) => ({
+        "@type": "Question",
+        "name": item.question,
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": item.answer
+        }
+      }))
+    };
+    break;
+
+  case 'Review':
+    schema = {
+      "@context": "https://schema.org",
+      "@type": "Review",
+      "itemReviewed": {
+        "@type": "LocalBusiness",
+        "name": data.businessName,
+        "image": data.businessImage,
+        "address": {
+          "@type": "PostalAddress",
+          "addressLocality": data.businessCity
+        }
+      },
+      "reviewRating": {
+        "@type": "Rating",
+        "ratingValue": data.rating,
+        "bestRating": "5"
+      },
+      "author": {
+        "@type": "Person",
+        "name": data.author
+      },
+      "reviewBody": data.reviewBody
+    };
+    break;
+
+  case 'Article':
+    schema = {
+      "@context": "https://schema.org",
+      "@type": "Article",
+      "headline": data.headline,
+      "image": data.image,
+      "datePublished": data.datePublished,
+      "dateModified": data.dateModified || data.datePublished,
+      "author": {
+        "@type": "Person",
+        "name": data.author
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": data.publisher.name,
+        "logo": {
+          "@type": "ImageObject",
+          "url": data.publisher.logo
+        }
+      },
+      "description": data.description
+    };
+    break;
+    
+  case 'BreadcrumbList':
+    schema = {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": data.items.map((item: any, index: number) => ({
+        "@type": "ListItem",
+        "position": index + 1,
+        "name": item.name,
+        "item": item.url
+      }))
+    };
+    break;
+    
+  case 'ProfessionalService':
+    schema = {
+      "@context": "https://schema.org",
+      "@type": "ProfessionalService",
+      "@id": data.url,
+      "name": data.name,
+      "image": data.image,
+      "url": data.url,
+      "telephone": data.telephone,
+      "priceRange": data.priceRange || "€€",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": data.address.street,
+        "addressLocality": data.address.city,
+        "postalCode": data.address.postalCode,
+        "addressCountry": "FR"
+      },
+      "geo": {
+        "@type": "GeoCoordinates",
+        "latitude": data.geo?.latitude,
+        "longitude": data.geo?.longitude
+      },
+      "openingHoursSpecification": data.openingHours.map((hour: any) => ({
+        "@type": "OpeningHoursSpecification",
+        "dayOfWeek": hour.dayOfWeek,
+        "opens": hour.opens,
+        "closes": hour.closes
+      })),
+      "makesOffer": data.services.map((service: any) => ({
+        "@type": "Offer",
+        "itemOffered": {
+          "@type": "Service",
+          "name": service.name,
+          "description": service.description
+        }
+      })),
+      "review": data.reviews.map((review: any) => ({
+        "@type": "Review",
+        "author": {
+          "@type": "Person",
+          "name": review.author
+        },
+        "reviewRating": {
+          "@type": "Rating",
+          "ratingValue": review.rating,
+          "bestRating": "5"
+        },
+        "reviewBody": review.text
+      })),
+      "sameAs": data.socialProfiles
+    };
+    break;
+}
+---
+
+{schema && <script type="application/ld+json" set:html={JSON.stringify(schema)} />}

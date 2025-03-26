@@ -1,0 +1,286 @@
+/* src/styles/global.css */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Variables personnalisées */
+:root {
+  --color-primary: #2563eb;
+  --color-primary-dark: #1d4ed8;
+  --color-secondary: #64748b;
+  --color-success: #10b981;
+  --color-warning: #f59e0b;
+  --color-danger: #ef4444;
+  --color-light: #f8fafc;
+  --color-dark: #1e293b;
+}
+
+/* Styles globaux */
+body {
+  font-family: 'Poppins', sans-serif;
+  color: #1e293b;
+  line-height: 1.6;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-weight: 700;
+  line-height: 1.2;
+  margin-bottom: 0.5em;
+}
+
+p {
+  margin-bottom: 1em;
+}
+
+a {
+  color: var(--color-primary);
+  text-decoration: none;
+  transition: color 0.3s;
+}
+
+a:hover {
+  color: var(--color-primary-dark);
+}
+
+/* Animations */
+.fade-in {
+  animation: fadeIn 0.5s ease-out forwards;
+}
+
+.slide-in-left {
+  animation: slideInLeft 0.5s ease-out forwards;
+}
+
+.slide-in-right {
+  animation: slideInRight 0.5s ease-out forwards;
+}
+
+.slide-in-bottom {
+  animation: slideInBottom 0.5s ease-out forwards;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInBottom {
+  from {
+    opacity: 0;
+    transform: translateY(50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Utilitaires */
+.page-title {
+  @apply text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-6;
+}
+
+.section-title {
+  @apply text-2xl md:text-3xl font-bold text-gray-900 mb-4;
+}
+
+.section-subtitle {
+  @apply text-xl font-semibold text-gray-800 mb-3;
+}
+
+.page-content {
+  @apply max-w-4xl mx-auto;
+}
+
+.btn {
+  @apply inline-flex items-center justify-center px-6 py-3 font-medium rounded-lg transition-colors duration-300;
+}
+
+.btn-primary {
+  @apply bg-blue-600 hover:bg-blue-700 text-white;
+}
+
+.btn-secondary {
+  @apply bg-gray-200 hover:bg-gray-300 text-gray-800;
+}
+
+.btn-outline {
+  @apply border-2 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white;
+}
+
+.card {
+  @apply bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300;
+}
+
+.card-body {
+  @apply p-6;
+}
+
+/* Styles de contenu */
+.rich-text h2 {
+  @apply text-2xl font-bold text-gray-900 mt-8 mb-4;
+}
+
+.rich-text h3 {
+  @apply text-xl font-semibold text-gray-900 mt-6 mb-3;
+}
+
+.rich-text p {
+  @apply text-gray-700 mb-4;
+}
+
+.rich-text ul {
+  @apply list-disc pl-6 mb-4 text-gray-700;
+}
+
+.rich-text ol {
+  @apply list-decimal pl-6 mb-4 text-gray-700;
+}
+
+.rich-text li {
+  @apply mb-2;
+}
+
+.rich-text a {
+  @apply text-blue-600 hover:text-blue-800 underline;
+}
+
+.rich-text blockquote {
+  @apply pl-4 border-l-4 border-gray-300 italic text-gray-600 my-4;
+}
+
+.rich-text img {
+  @apply rounded-lg shadow-md my-6 max-w-full h-auto;
+}
+
+/* Formulaires */
+.form-group {
+  @apply mb-4;
+}
+
+.form-label {
+  @apply block text-gray-700 font-medium mb-2;
+}
+
+.form-input {
+  @apply w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-300;
+}
+
+.form-textarea {
+  @apply w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-300 min-h-[120px];
+}
+
+.form-select {
+  @apply w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-300 appearance-none bg-white;
+}
+
+.form-checkbox {
+  @apply rounded text-blue-600 focus:ring-blue-500 mr-2;
+}
+
+.form-radio {
+  @apply text-blue-600 focus:ring-blue-500 mr-2;
+}
+
+/* Breadcrumbs */
+.breadcrumbs {
+  @apply flex flex-wrap items-center text-sm text-gray-600 mb-6;
+}
+
+.breadcrumbs-item {
+  @apply flex items-center;
+}
+
+.breadcrumbs-separator {
+  @apply mx-2 text-gray-400;
+}
+
+.breadcrumbs-link {
+  @apply hover:text-blue-600 transition-colors duration-300;
+}
+
+.breadcrumbs-current {
+  @apply text-gray-900 font-medium;
+}
+
+/* Page headers */
+.page-header {
+  @apply py-12 bg-gray-50 border-b border-gray-200 mb-12;
+}
+
+.page-header-content {
+  @apply container mx-auto px-4 sm:px-6 lg:px-8;
+}
+
+/* Pagination */
+.pagination {
+  @apply flex justify-center items-center space-x-2 mt-8;
+}
+
+.pagination-item {
+  @apply inline-flex items-center justify-center w-10 h-10 rounded-md transition-colors duration-300;
+}
+
+.pagination-link {
+  @apply text-gray-700 hover:bg-gray-100;
+}
+
+.pagination-active {
+  @apply bg-blue-600 text-white hover:bg-blue-700;
+}
+
+.pagination-disabled {
+  @apply text-gray-400 cursor-not-allowed;
+}
+
+/* Utility classes for animations */
+.delay-100 {
+  animation-delay: 0.1s;
+}
+
+.delay-200 {
+  animation-delay: 0.2s;
+}
+
+.delay-300 {
+  animation-delay: 0.3s;
+}
+
+.delay-400 {
+  animation-delay: 0.4s;
+}
+
+.delay-500 {
+  animation-delay: 0.5s;
+}
