@@ -19,7 +19,11 @@ interface Props {
   testimonials: Testimonial[];
 }
 
-const { title, description, testimonials } = Astro.props;
+const { 
+  title = "Ce Que Disent Nos Clients", 
+  description = "Découvrez les témoignages de nos clients satisfaits.", 
+  testimonials = [] 
+} = Astro.props;
 
 // Fonction pour générer les étoiles selon la note
 const generateStars = (rating: number) => {

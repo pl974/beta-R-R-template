@@ -1,0 +1,119 @@
+---
+interface PricingPlan {
+  title: string;
+  icon: string;
+  price: string;
+  subtitle: string;
+  recommended?: boolean;
+  features: string[];
+}
+
+interface Props {
+  title?: string;
+  description?: string;
+  plans?: PricingPlan[];
+  buttonText?: string;
+  buttonUrl?: string;
+}
+
+const { 
+  title = "Nos Tarifs Compétitifs", 
+  description = "Découvrez nos différentes formules adaptées à vos besoins et à votre budget.", 
+  plans = [], 
+  buttonText = "Demander un devis", 
+  buttonUrl = "/contact" 
+} = Astro.props;
+---
+
+<section class="py-16 bg-white">
+  <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="text-center max-w-3xl mx-auto mb-12">
+      <h2 class="text-3xl font-bold text-gray-900 mb-4">
+        {title}
+      </h2>
+      <p class="text-lg text-gray-700">
+        {description}
+      </p>
+      <div class="w-20 h-1 bg-blue-600 mx-auto mt-6"></div>
+    </div>
+    
+    <!-- Grille de prix -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-12">
+      {plans.map((plan) => (
+        <div class={`
+          bg-white rounded-xl overflow-hidden shadow-lg border transition-all duration-300
+          ${plan.recommended 
+            ? 'relative border-blue-500 transform hover:-translate-y-2 md:scale-105' 
+            : 'border-gray-200 hover:shadow-xl'
+          }
+        `}>
+          {plan.recommended && (
+            <div class="absolute top-0 inset-x-0 transform -translate-y-1/2">
+              <span class="inline-flex bg-blue-600 text-white text-sm font-semibold px-4 py-1 rounded-full">
+                Recommandé
+              </span>
+            </div>
+          )}
+          
+          <div class="p-6 md:p-8">
+            <!-- En-tête du plan -->
+            <div class="flex items-center mb-4">
+              <div class={`
+                w-12 h-12 rounded-full flex items-center justify-center mr-4
+                ${plan.recommended ? 'bg-blue-100 text-blue-600' : 'bg-gray-100 text-gray-700'}
+              `}>
+                <i class={`fa-solid fa-${plan.icon} text-xl`}></i>
+              </div>
+              <h3 class="text-2xl font-bold text-gray-900">{plan.title}</h3>
+            </div>
+            
+            <!-- Prix -->
+            <div class="mt-6 mb-6">
+              <div class="text-3xl md:text-4xl font-bold">
+                {plan.price}
+                <span class="text-lg text-gray-500 font-normal">€</span>
+              </div>
+              <p class="text-gray-600 mt-1">{plan.subtitle}</p>
+            </div>
+            
+            <!-- Ligne de séparation -->
+            <div class="w-full h-px bg-gray-200 my-6"></div>
+            
+            <!-- Caractéristiques -->
+            <ul class="space-y-4 mb-8">
+              {plan.features.map((feature) => (
+                <li class="flex items-start">
+                  <i class="fa-solid fa-check text-green-500 mt-1 mr-3"></i>
+                  <span class="text-gray-700">{feature}</span>
+                </li>
+              ))}
+            </ul>
+            
+            <!-- CTA -->
+            <a 
+              href={buttonUrl} 
+              class={`
+                block w-full py-3 px-4 rounded-lg text-center font-semibold transition-colors duration-300
+                ${plan.recommended 
+                  ? 'bg-blue-600 hover:bg-blue-700 text-white' 
+                  : 'bg-gray-100 hover:bg-gray-200 text-gray-800'
+                }
+              `}
+            >
+              {buttonText}
+            </a>
+          </div>
+        </div>
+      ))}
+    </div>
+    
+    <!-- Note de bas de section -->
+    <div class="text-center mt-10 text-gray-600 max-w-2xl mx-auto">
+      <p>
+        <i class="fa-solid fa-info-circle mr-2 text-blue-600"></i>
+        Tous nos tarifs sont TTC et peuvent varier selon la complexité du travail. 
+        Contactez-nous pour un devis personnalisé et gratuit.
+      </p>
+    </div>
+  </div>
+</section>

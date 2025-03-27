@@ -1,8 +1,4 @@
-//----------------------- CTA SECTION -----------------------
 ---
-// src/components/homepage/CtaSection.astro
-// Composant pour la section CTA (Call to Action)
-
 interface Props {
   title?: string;
   description?: string;
@@ -21,7 +17,7 @@ const {
   phoneNumber = "01 23 45 67 89" 
 } = Astro.props;
 
-console.log("CTA Props:", { title, description, backgroundImage, buttonText, buttonUrl, phoneNumber });
+console.log("CtaSection Props received:", { title, description, backgroundImage, buttonText, buttonUrl, phoneNumber });
 ---
 
 <section 

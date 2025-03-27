@@ -9,12 +9,18 @@ interface FaqItem {
 }
 
 interface Props {
-  title: string;
-  description: string;
-  questions: FaqItem[];
+  title?: string;
+  description?: string;
+  questions?: FaqItem[];
 }
 
-const { title, description, questions } = Astro.props;
+const { 
+  title = "Questions Fréquentes", 
+  description = "Retrouvez les réponses aux questions les plus fréquemment posées par nos clients.", 
+  questions = [] 
+} = Astro.props;
+
+console.log("FaqSection Props received:", { title, description, questionsLength: questions.length });
 ---
 
 <section class="py-16 bg-white">

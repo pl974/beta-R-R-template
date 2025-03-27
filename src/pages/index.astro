@@ -4,14 +4,14 @@ import { getCollection, getEntry } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
 
 // Importation des composants de la page d'accueil
-import HeroBanner from '../components/homepage/HeroBanner.astro';
-import AboutSection from '../components/homepage/AboutSection.astro';
-import ServicesSection from '../components/homepage/ServicesSection.astro';
-import PricingGrid from '../components/homepage/PricingGrid.astro';
-import ProcessSection from '../components/homepage/ProcessSection.astro';
-import CtaSection from '../components/homepage/CtaSection.astro';
-import FaqSection from '../components/homepage/FaqSection.astro';
-import ReviewsSection from '../components/homepage/ReviewsSection.astro';
+import HeroBannerNew from '../components/homepage/HeroBannerNew.astro';
+import AboutSectionNew from '../components/homepage/AboutSectionNew.astro';
+import ServicesSectionNew from '../components/homepage/ServicesSectionNew.astro';
+import PricingGridNew from '../components/homepage/PricingGridNew.astro';
+import ProcessSectionNew from '../components/homepage/ProcessSectionNew.astro';
+import CtaSectionNew from '../components/homepage/CtaSectionNew.astro';
+import FaqSectionNew from '../components/homepage/FaqSectionNew.astro';
+import ReviewsSectionNew from '../components/homepage/ReviewsSectionNew.astro';
 
 // Récupération des données pour la page
 const heroData = await getEntry('homepage', 'hero') || { data: {} };
@@ -19,6 +19,7 @@ const aboutData = await getEntry('homepage', 'about') || { data: {} };
 const pricingData = await getEntry('homepage', 'pricing') || { data: {} };
 const processData = await getEntry('homepage', 'process') || { data: {} };
 const ctaData = await getEntry('homepage', 'cta') || { data: {} };
+console.log("CTA data from CMS:", ctaData); // Debug
 const faqData = await getEntry('homepage', 'faq') || { data: {} };
 const reviewsData = await getEntry('homepage', 'reviews') || { data: {} };
 
@@ -82,65 +83,59 @@ const businessSchema = {
   schemaData={businessSchema}
 >
   <!-- Hero Banner -->
-  <HeroBanner
-    title={heroData.data.title}
-    description={heroData.data.description}
-    backgroundImage={heroData.data.backgroundImage}
-    buttonText={heroData.data.buttonText}
-    buttonUrl={heroData.data.buttonUrl}
-    overlay={heroData.data.overlay}
-  />
+  <HeroBannerNew
+  title={heroData.data?.title}
+  description={heroData.data?.description}
+  backgroundImage={heroData.data?.backgroundImage}
+  buttonText={heroData.data?.buttonText}
+  buttonUrl={heroData.data?.buttonUrl}
+  overlay={heroData.data?.overlay}
+/>
   
   <!-- À propos -->
-  <AboutSection
-    title={aboutData.data.title}
-    description={aboutData.data.description}
-    image={aboutData.data.image}
-    keyPoints={aboutData.data.keyPoints}
-  />
+  <AboutSectionNew
+  title={aboutData.data?.title}
+  description={aboutData.data?.description}
+  image={aboutData.data?.image}
+  keyPoints={aboutData.data?.keyPoints}
+/>
   
-  <!-- Services -->
-  <ServicesSection
-    services={sortedServices}
-  />
-  
-  <!-- Grille tarifaire -->
-  <PricingGrid
-    title={pricingData.data.title}
-    description={pricingData.data.description}
-    plans={pricingData.data.plans}
-    buttonText={pricingData.data.buttonText}
-    buttonUrl={pricingData.data.buttonUrl}
-  />
-  
-  <!-- Processus d'intervention -->
-  <ProcessSection
-    title={processData?.data.title || "Notre Processus d'Intervention"}
-    description={processData?.data.description || "Découvrez notre méthode de travail professionnelle"}
-    steps={processData?.data.steps || []}
-  />
-  
-  <!-- Section CTA -->
-  <CtaSection
-    title={ctaData.data.title}
-    description={ctaData.data.description}
-    backgroundImage={ctaData.data.backgroundImage}
-    buttonText={ctaData.data.buttonText}
-    buttonUrl={ctaData.data.buttonUrl}
-    phoneNumber={ctaData.data.phoneNumber}
-  />
-  
-  <!-- FAQ -->
-  <FaqSection
-    title={faqData.data.title}
-    description={faqData.data.description}
-    questions={faqData.data.questions}
-  />
-  
-  <!-- Avis clients -->
-  <ReviewsSection
-    title={reviewsData.data.title}
-    description={reviewsData.data.description}
-    testimonials={reviewsData.data.testimonials}
-  />
+<ServicesSectionNew
+  services={sortedServices}
+/>
+
+<PricingGridNew
+  title={pricingData.data?.title}
+  description={pricingData.data?.description}
+  plans={pricingData.data?.plans}
+  buttonText={pricingData.data?.buttonText}
+  buttonUrl={pricingData.data?.buttonUrl}
+/>
+
+<ProcessSectionNew
+  title={processData?.data?.title}
+  description={processData?.data?.description}
+  steps={processData?.data?.steps}
+/>
+
+<CtaSectionNew
+  title={ctaData.data?.title}
+  description={ctaData.data?.description}
+  backgroundImage={ctaData.data?.backgroundImage}
+  buttonText={ctaData.data?.buttonText}
+  buttonUrl={ctaData.data?.buttonUrl}
+  phoneNumber={ctaData.data?.phoneNumber}
+/>
+
+<FaqSectionNew
+  title={faqData.data?.title}
+  description={faqData.data?.description}
+  questions={faqData.data?.questions}
+/>
+
+<ReviewsSectionNew
+  title={reviewsData.data?.title}
+  description={reviewsData.data?.description}
+  testimonials={reviewsData.data?.testimonials}
+/>
 </BaseLayout>

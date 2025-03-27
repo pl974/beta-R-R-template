@@ -1,21 +1,20 @@
-//----------------------- HEADER.ASTRO -----------------------
 ---
-// src/components/Header.astro
+// src/components/HeaderNew.astro
 // Récupération des listes de services et villes pour le menu
 import { getCollection } from 'astro:content';
 
 // Récupérer les services et les trier par ordre
-const services = await getCollection('services');
-const sortedServices = services.sort((a, b) => (a.data.order || 0) - (b.data.order || 0));
+const services = await getCollection('services').catch(() => []);
+const sortedServices = services ? services.sort((a, b) => (a.data.order || 0) - (b.data.order || 0)) : [];
 
 // Récupérer les villes premium et standard
-const premiumVilles = await getCollection('villes/premium');
-const standardVilles = await getCollection('villes');
+// Utilisons 'premium' au lieu de 'villes/premium'
+const premiumVilles = await getCollection('premium').catch(() => []);
+const standardVilles = await getCollection('villes').catch(() => []);
 
 // Initialiser l'état du menu mobile (fermé par défaut)
 const isMobileMenuOpen = false;
 ---
-
 <header class="bg-white shadow-md sticky top-0 z-50">
   <div class="container mx-auto px-4 sm:px-6 lg:px-8">
     <div class="flex justify-between items-center py-4 md:justify-start md:space-x-10">

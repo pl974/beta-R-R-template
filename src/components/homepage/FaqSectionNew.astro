@@ -1,0 +1,130 @@
+---
+interface FaqItem {
+  question: string;
+  answer: string;
+}
+
+interface Props {
+  title?: string;
+  description?: string;
+  questions?: FaqItem[];
+}
+
+const { 
+  title = "Questions Fréquentes", 
+  description = "Retrouvez les réponses aux questions les plus fréquemment posées par nos clients.", 
+  questions = [] 
+} = Astro.props;
+
+console.log("FaqSection Props received:", { title, description, questionsLength: questions?.length });
+---
+
+<section class="py-16 bg-white">
+  <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="text-center max-w-3xl mx-auto mb-12">
+      <h2 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
+        {title}
+      </h2>
+      <p class="text-lg text-gray-700">
+        {description}
+      </p>
+      <div class="w-20 h-1 bg-blue-600 mx-auto mt-6"></div>
+    </div>
+    
+    <div class="max-w-3xl mx-auto mt-12">
+      <div class="space-y-6">
+        {questions && questions.map((item, index) => (
+          <div class="bg-gray-50 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300">
+            <button 
+              class="w-full px-6 py-4 text-left flex justify-between items-center focus:outline-none faq-question" 
+              data-index={index}
+              aria-expanded="false"
+            >
+              <span class="text-lg font-semibold text-gray-900">{item.question}</span>
+              <i class="fa-solid fa-plus text-blue-600 transform transition-transform duration-300"></i>
+            </button>
+            
+            <div class="faq-answer px-6 pb-5 text-gray-700 hidden" data-index={index}>
+              <div class="border-t border-gray-200 pt-4 mt-1">
+                <div set:html={item.answer} />
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+      
+      <div class="mt-12 text-center">
+        <p class="text-gray-700 mb-4">
+          Vous ne trouvez pas la réponse à votre question ?
+        </p>
+        <a 
+          href="/contact" 
+          class="inline-flex items-center px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors duration-300"
+        >
+          Contactez-nous
+          <i class="fa-solid fa-angle-right ml-2"></i>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const questions = document.querySelectorAll('.faq-question');
+    
+    questions.forEach(question => {
+      question.addEventListener('click', () => {
+        const index = question.getAttribute('data-index');
+        const answer = document.querySelector(`.faq-answer[data-index="${index}"]`);
+        const icon = question.querySelector('i');
+        
+        const isExpanded = question.getAttribute('aria-expanded') === 'true';
+        
+        // Fermer toutes les autres réponses
+        questions.forEach(q => {
+          if (q !== question) {
+            const idx = q.getAttribute('data-index');
+            const ans = document.querySelector(`.faq-answer[data-index="${idx}"]`);
+            const icn = q.querySelector('i');
+            
+            q.setAttribute('aria-expanded', 'false');
+            ans.classList.add('hidden');
+            icn.classList.remove('fa-minus');
+            icn.classList.add('fa-plus');
+            icn.style.transform = 'rotate(0deg)';
+          }
+        });
+        
+        // Ouvrir/fermer la réponse actuelle
+        if (isExpanded) {
+          answer.classList.add('hidden');
+          icon.classList.remove('fa-minus');
+          icon.classList.add('fa-plus');
+          icon.style.transform = 'rotate(0deg)';
+          question.setAttribute('aria-expanded', 'false');
+        } else {
+          answer.classList.remove('hidden');
+          icon.classList.remove('fa-plus');
+          icon.classList.add('fa-minus');
+          icon.style.transform = 'rotate(180deg)';
+          question.setAttribute('aria-expanded', 'true');
+        }
+      });
+    });
+    
+    // Ouvrir la première question par défaut
+    if (questions.length > 0) {
+      const firstQuestion = questions[0];
+      const index = firstQuestion.getAttribute('data-index');
+      const answer = document.querySelector(`.faq-answer[data-index="${index}"]`);
+      const icon = firstQuestion.querySelector('i');
+      
+      firstQuestion.setAttribute('aria-expanded', 'true');
+      answer.classList.remove('hidden');
+      icon.classList.remove('fa-plus');
+      icon.classList.add('fa-minus');
+      icon.style.transform = 'rotate(180deg)';
+    }
+  });
+</script>
