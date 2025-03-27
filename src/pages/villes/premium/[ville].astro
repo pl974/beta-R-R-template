@@ -3,12 +3,15 @@
 import { getCollection } from 'astro:content';
 import BaseLayout from '../../../layouts/BaseLayout.astro';
 
-// Cette page réutilise le même template que la page ville standard, 
-// mais avec la propriété isPremium à true pour différencier les villes premium
-
 // Fonction pour générer les chemins statiques
 export async function getStaticPaths() {
-  const premiumVilles = await getCollection('villes/premium');
+  const premiumVilles = await getCollection('premium');
+  
+  // Vérification pour s'assurer que premiumVilles n'est pas vide
+  if (!premiumVilles || premiumVilles.length === 0) {
+    console.warn("Attention: Aucune ville premium trouvée dans la collection 'premium'");
+    return [];
+  }
   
   return premiumVilles.map(ville => {
     return {
@@ -26,8 +29,8 @@ const { Content } = await ville.render();
 const services = await getCollection('services');
 const sortedServices = services.sort((a, b) => (a.data.order || 0) - (b.data.order || 0));
 
-// Récupérer des villes proches (exemple simple - à personnaliser selon besoin)
-const allPremiumVilles = await getCollection('villes/premium');
+// Récupérer des villes proches
+const allPremiumVilles = await getCollection('premium');
 const nearbyVilles = allPremiumVilles
   .filter(v => v.slug !== ville.slug)
   .sort(() => Math.random() - 0.5)
@@ -131,7 +134,6 @@ const breadcrumbSchema = {
         </div>
       </div>
       
-      {/* Badge Premium */}
       <div class="inline-flex items-center bg-yellow-500 text-white text-sm font-bold px-3 py-1 rounded-full mb-4">
         <i class="fa-solid fa-star mr-1"></i>
         Zone Premium
@@ -164,20 +166,38 @@ const breadcrumbSchema = {
     </div>
   </div>
   
-  <!-- Le reste du contenu est identique à la page ville standard -->
-  <!-- Voir le fichier src/pages/villes/[ville].astro pour le contenu complet -->
-  
   <!-- Contenu principal -->
   <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
-    <!-- ...contenu de la page ici... -->
-    <div class="rich-text">
-      <Content />
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-12">
+      <!-- Colonne principale -->
+      <div class="lg:col-span-2">
+        <!-- Contenu de la page -->
+        <div class="prose prose-lg max-w-none mb-12">
+          <Content />
+        </div>
+        
+        <!-- Autres sections de contenu -->
+        <div class="mb-12">
+          <h2 class="text-2xl font-bold text-gray-900 mb-6">Nos services à {title}</h2>
+          <!-- Liste des services -->
+        </div>
+      </div>
+      
+      <!-- Sidebar -->
+      <div class="lg:col-span-1">
+        <!-- Widget de contact -->
+        <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+          <h3 class="text-xl font-bold text-gray-900 mb-4">Contactez-nous</h3>
+          <!-- Formulaire ou informations de contact -->
+        </div>
+      </div>
     </div>
-    
-    <!-- ...le reste du contenu ici... -->
   </div>
 </BaseLayout>
 
 <script>
-  // Les scripts sont identiques à la page ville standard
+  // Scripts client-side ici
+  document.addEventListener('DOMContentLoaded', () => {
+    // Initialisation des scripts
+  });
 </script>

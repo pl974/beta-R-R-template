@@ -1,16 +1,13 @@
-## // Exemple de contenu pour un Service (plomberie.md)
-
+---
 title: "Plomberie"
 description: "Services de plomberie professionnels pour tous vos besoins. Intervention rapide et travail de qualité garanti."
 image: "/images/services/plomberie.jpg"
 icon: "faucet"
 order: 1
 seo:
-metaTitle: "Services de Plomberie Professionnels | Intervention Rapide"
-metaDescription: "Nos plombiers professionnels interviennent rapidement pour tous vos besoins en plomberie : dépannage, installation, rénovation. Devis gratuit."
-
+  metaTitle: "Services de Plomberie Professionnels | Intervention Rapide"
+  metaDescription: "Nos plombiers professionnels interviennent rapidement pour tous vos besoins en plomberie : dépannage, installation, rénovation. Devis gratuit."
 ---
-
 # Services de Plomberie Professionnels
 
 Notre équipe de plombiers professionnels est à votre service pour résoudre tous vos problèmes de plomberie, des plus simples aux plus complexes. Forts de notre expérience et de notre savoir-faire, nous garantissons des interventions rapides et efficaces pour vous offrir une tranquillité d'esprit totale.

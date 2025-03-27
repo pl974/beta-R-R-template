@@ -8,7 +8,10 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 export async function getStaticPaths() {
   const allVilles = await getCollection('villes');
   
-  return allVilles.map(ville => {
+  // Vérifiez que chaque slug est valide (ne contient pas de "/")
+  const validVilles = allVilles.filter(ville => !ville.slug.includes('/'));
+  
+  return validVilles.map(ville => {
     return {
       params: { ville: ville.slug },
       props: { ville, isPremium: false }

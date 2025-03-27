@@ -19,5 +19,9 @@ export default defineConfig({
     ssr: {
       external: ['svgo'],
     },
+    optimizeDeps: {
+      noDiscovery: true,
+      include: undefined
+    }
   },
 });
