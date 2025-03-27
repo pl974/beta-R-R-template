@@ -49,67 +49,66 @@ const breadcrumbSchema = {
     </div>
   </div>
   
-  <!-- Section Notre Histoire -->
+  <!-- Section Notre Histoire - RESTRUCTURÉE -->
   <section class="py-16 bg-white">
     <div class="container mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-        <div>
-          <h2 class="text-3xl font-bold text-gray-900 mb-6 relative">
-            Notre Histoire
-            <span class="block w-20 h-1 bg-blue-600 mt-4"></span>
-          </h2>
+      <h2 class="text-3xl font-bold text-gray-900 mb-6 relative">
+        Notre Histoire
+        <span class="block w-20 h-1 bg-blue-600 mt-4"></span>
+      </h2>
+      
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
+        <!-- Colonne de gauche: Texte -->
+        <div class="space-y-4 text-gray-700">
+          <p>
+            Notre entreprise a été fondée en 2010 avec une mission claire : offrir des services professionnels de haute qualité à des prix compétitifs. Ce qui a commencé comme une petite équipe de passionnés s'est transformé en une entreprise reconnue dans toute la région.
+          </p>
           
-          <div class="space-y-4 text-gray-700">
-            <p>
-              Notre entreprise a été fondée en 2010 avec une mission claire : offrir des services professionnels de haute qualité à des prix compétitifs. Ce qui a commencé comme une petite équipe de passionnés s'est transformé en une entreprise reconnue dans toute la région.
-            </p>
-            
-            <p>
-              Au fil des années, nous avons élargi notre gamme de services pour répondre aux besoins croissants de nos clients tout en maintenant notre engagement envers l'excellence et la satisfaction client.
-            </p>
-            
-            <p>
-              Aujourd'hui, notre équipe compte plus de 20 professionnels qualifiés, chacun spécialisé dans son domaine d'expertise. Nous sommes fiers de notre croissance et du nombre croissant de clients satisfaits qui nous font confiance année après année.
-            </p>
-          </div>
+          <p>
+            Au fil des années, nous avons élargi notre gamme de services pour répondre aux besoins croissants de nos clients tout en maintenant notre engagement envers l'excellence et la satisfaction client.
+          </p>
+          
+          <p>
+            Aujourd'hui, notre équipe compte plus de 20 professionnels qualifiés, chacun spécialisé dans son domaine d'expertise. Nous sommes fiers de notre croissance et du nombre croissant de clients satisfaits qui nous font confiance année après année.
+          </p>
         </div>
         
-        <div class="relative">
+        <!-- Colonne de droite: Timeline et Image -->
+        <div class="flex flex-col">
+          <!-- Timeline d'abord, clairement séparée -->
+          <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+            <div class="timeline-container">
+              <div class="timeline">
+                <div class="timeline-item">
+                  <div class="year">2010</div>
+                  <div class="description">Fondation</div>
+                </div>
+                
+                <div class="timeline-item">
+                  <div class="year">2015</div>
+                  <div class="description">Expansion</div>
+                </div>
+                
+                <div class="timeline-item">
+                  <div class="year">2020</div>
+                  <div class="description">Innovation</div>
+                </div>
+                
+                <div class="timeline-item">
+                  <div class="year">Aujourd'hui</div>
+                  <div class="description">Excellence</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Image en dessous -->
           <div class="rounded-lg overflow-hidden shadow-xl">
             <img 
               src="/images/about-history.jpg" 
               alt="Notre histoire" 
               class="w-full h-auto"
             />
-          </div>
-          
-          <!-- Décorations -->
-          <div class="absolute -top-6 -left-6 w-24 h-24 bg-blue-100 rounded-full z-0 opacity-70"></div>
-          <div class="absolute -bottom-6 -right-6 w-32 h-32 bg-blue-50 rounded-full z-0 opacity-70"></div>
-          
-          <!-- Timeline en overlay -->
-          <div class="absolute bottom-8 left-8 right-8 bg-white/90 backdrop-blur-sm rounded-lg p-4 shadow-lg">
-            <div class="flex justify-between">
-              <div class="text-center">
-                <div class="text-blue-600 font-bold">2010</div>
-                <div class="text-sm text-gray-600">Fondation</div>
-              </div>
-              
-              <div class="text-center">
-                <div class="text-blue-600 font-bold">2015</div>
-                <div class="text-sm text-gray-600">Expansion</div>
-              </div>
-              
-              <div class="text-center">
-                <div class="text-blue-600 font-bold">2020</div>
-                <div class="text-sm text-gray-600">Innovation</div>
-              </div>
-              
-              <div class="text-center">
-                <div class="text-blue-600 font-bold">Aujourd'hui</div>
-                <div class="text-sm text-gray-600">Excellence</div>
-              </div>
-            </div>
           </div>
         </div>
       </div>
@@ -475,6 +474,100 @@ const breadcrumbSchema = {
   </section>
 </BaseLayout>
 
+<style>
+  /* Styles pour la timeline responsive */
+  .timeline-container {
+    width: 100%;
+    overflow: hidden;
+  }
+  
+  .timeline {
+    display: flex;
+    justify-content: space-between;
+    margin: 1rem 0;
+    position: relative;
+  }
+  
+  .timeline::before {
+    content: '';
+    position: absolute;
+    top: 1.5rem;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background-color: #e2e8f0;
+    z-index: 1;
+  }
+  
+  .timeline-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    padding: 0 0.5rem;
+    background-color: white;
+  }
+  
+  .timeline-item .year {
+    color: #3182ce;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+  }
+  
+  .timeline-item .description {
+    color: #4a5568;
+    font-size: 0.875rem;
+  }
+  
+  /* Version responsive */
+  @media (max-width: 768px) {
+    .timeline {
+      flex-direction: column;
+      align-items: flex-start;
+      margin-left: 1.5rem;
+    }
+    
+    .timeline::before {
+      top: 0;
+      bottom: 0;
+      left: 0;
+      width: 2px;
+      height: 100%;
+      right: auto;
+    }
+    
+    .timeline-item {
+      flex-direction: row;
+      justify-content: flex-start;
+      align-items: center;
+      width: 100%;
+      margin-bottom: 1.5rem;
+      text-align: left;
+      padding-left: 1.5rem;
+    }
+    
+    .timeline-item .year {
+      margin-right: 1rem;
+      margin-bottom: 0;
+      position: relative;
+    }
+    
+    .timeline-item .year::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: -1.75rem;
+      width: 0.75rem;
+      height: 0.75rem;
+      background-color: #3182ce;
+      border-radius: 50%;
+      transform: translateY(-50%);
+    }
+  }
+</style>
+
 <script>
   document.addEventListener('DOMContentLoaded', () => {
     // Animation des compteurs
@@ -508,7 +601,7 @@ const breadcrumbSchema = {
     }, { threshold: 0.5 });
     
     // Observer la section des compteurs
-    const section = document.querySelector('.counter').closest('section');
-    observer.observe(section);
+    const section = document.querySelector('.counter')?.closest('section');
+    if (section) observer.observe(section);
   });
 </script>

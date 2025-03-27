@@ -284,3 +284,85 @@ a:hover {
 .delay-500 {
   animation-delay: 0.5s;
 }
+
+/* Ajoutez ces styles dans votre fichier CSS global ou dans un style scoped pour ce composant */
+
+/* Style de base pour la timeline */
+.timeline {
+  display: flex;
+  justify-content: space-between;
+  position: relative;
+  margin: 3rem 0;
+  padding: 0 1rem;
+}
+
+/* Style pour chaque point de la timeline */
+.timeline-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  z-index: 2;
+}
+
+/* Ligne de connexion entre les points */
+.timeline::before {
+  content: '';
+  position: absolute;
+  top: 1.5rem;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background-color: #e0e0e0;
+  z-index: 1;
+}
+
+/* Style pour la date */
+.timeline-year {
+  font-weight: bold;
+  color: #3182CE;
+  margin-bottom: 0.5rem;
+}
+
+/* Style pour le label */
+.timeline-label {
+  font-size: 0.875rem;
+  color: #4A5568;
+}
+
+/* Adaptation responsive */
+@media (max-width: 768px) {
+  .timeline {
+    flex-direction: column;
+    align-items: flex-start;
+    margin-top: 2rem;
+    padding-left: 2rem;
+  }
+  
+  .timeline::before {
+    top: 0;
+    bottom: 0;
+    left: 0.75rem;
+    right: auto;
+    width: 1px;
+    height: 100%;
+  }
+  
+  .timeline-item {
+    flex-direction: row;
+    margin-bottom: 1.5rem;
+    width: 100%;
+  }
+  
+  .timeline-year {
+    margin-right: 1rem;
+    margin-bottom: 0;
+  }
+  
+  /* S'assurer que l'image de l'historique est responsive */
+  .history-image {
+    width: 100%;
+    height: auto;
+    margin-top: 2rem;
+  }
+}
