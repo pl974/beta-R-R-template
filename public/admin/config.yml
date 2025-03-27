@@ -35,3 +35,170 @@ collections:
               - {label: "Meta Description", name: "metaDescription", widget: "text"}
               - {label: "Ville principale", name: "city", widget: "string"}
               - {label: "Métier", name: "profession", widget: "string"}
+              
+      - file: "src/content/homepage/about.md"
+        label: "Section À Propos"
+        name: "about"
+        fields:
+          - {label: "Titre", name: "title", widget: "string"}
+          - {label: "Description", name: "description", widget: "text"}
+          - {label: "Image", name: "image", widget: "image"}
+          - label: "Points clés"
+            name: "keyPoints"
+            widget: "list"
+            fields:
+              - {label: "Icône", name: "icon", widget: "string", hint: "Nom de l'icône Font Awesome (ex: check-circle)"}
+              - {label: "Titre", name: "title", widget: "string"}
+              - {label: "Description", name: "description", widget: "string"}
+
+      - file: "src/content/homepage/pricing.md"
+        label: "Grille Tarifaire"
+        name: "pricing"
+        fields:
+          - {label: "Titre", name: "title", widget: "string"}
+          - {label: "Description", name: "description", widget: "text"}
+          - label: "Plans tarifaires"
+            name: "plans"
+            widget: "list"
+            fields:
+              - {label: "Titre", name: "title", widget: "string"}
+              - {label: "Icône", name: "icon", widget: "string"}
+              - {label: "Prix", name: "price", widget: "string"}
+              - {label: "Sous-titre", name: "subtitle", widget: "string"}
+              - {label: "Recommandé", name: "recommended", widget: "boolean", default: false}
+              - label: "Fonctionnalités"
+                name: "features"
+                widget: "list"
+          - {label: "Texte du bouton", name: "buttonText", widget: "string"}
+          - {label: "URL du bouton", name: "buttonUrl", widget: "string"}
+
+      - file: "src/content/homepage/process.md"
+        label: "Processus d'Intervention"
+        name: "process"
+        fields:
+          - {label: "Titre", name: "title", widget: "string"}
+          - {label: "Description", name: "description", widget: "text"}
+          - label: "Étapes du processus"
+            name: "steps"
+            widget: "list"
+            fields:
+              - {label: "Titre", name: "title", widget: "string"}
+              - {label: "Description", name: "description", widget: "text"}
+              - {label: "Icône", name: "icon", widget: "string"}
+              - {label: "Numéro d'étape", name: "stepNumber", widget: "number"}
+
+      - file: "src/content/homepage/cta.md"
+        label: "Section CTA"
+        name: "cta"
+        fields:
+          - {label: "Titre", name: "title", widget: "string"}
+          - {label: "Description", name: "description", widget: "text"}
+          - {label: "Image de fond", name: "backgroundImage", widget: "image"}
+          - {label: "Texte du bouton", name: "buttonText", widget: "string"}
+          - {label: "URL du bouton", name: "buttonUrl", widget: "string"}
+          - {label: "Numéro de téléphone", name: "phoneNumber", widget: "string"}
+
+      - file: "src/content/homepage/faq.md"
+        label: "FAQ"
+        name: "faq"
+        fields:
+          - {label: "Titre", name: "title", widget: "string"}
+          - {label: "Description", name: "description", widget: "text"}
+          - label: "Questions"
+            name: "questions"
+            widget: "list"
+            fields:
+              - {label: "Question", name: "question", widget: "string"}
+              - {label: "Réponse", name: "answer", widget: "markdown"}
+
+      - file: "src/content/homepage/reviews.md"
+        label: "Avis Clients"
+        name: "reviews"
+        fields:
+          - {label: "Titre", name: "title", widget: "string"}
+          - {label: "Description", name: "description", widget: "text"}
+          - label: "Témoignages"
+            name: "testimonials"
+            widget: "list"
+            fields:
+              - {label: "Nom", name: "name", widget: "string"}
+              - {label: "Photo", name: "photo", widget: "image", required: false}
+              - {label: "Note", name: "rating", widget: "number", min: 1, max: 5, step: 0.5}
+              - {label: "Commentaire", name: "comment", widget: "text"}
+              - {label: "Date", name: "date", widget: "string"}
+              - {label: "Ville", name: "city", widget: "string"}
+              - {label: "Service", name: "service", widget: "string"}
+
+  - name: "services"
+    label: "Services"
+    folder: "src/content/services"
+    create: true
+    slug: "{{slug}}"
+    fields:
+      - {label: "Titre", name: "title", widget: "string"}
+      - {label: "Description", name: "description", widget: "text"}
+      - {label: "Image", name: "image", widget: "image"}
+      - {label: "Icône", name: "icon", widget: "string", hint: "Nom de l'icône Font Awesome (ex: wrench)"}
+      - {label: "Ordre d'affichage", name: "order", widget: "number", default: 1}
+      - {label: "Contenu", name: "body", widget: "markdown"}
+      - label: "SEO"
+        name: "seo"
+        widget: "object"
+        fields:
+          - {label: "Meta Title", name: "metaTitle", widget: "string"}
+          - {label: "Meta Description", name: "metaDescription", widget: "text"}
+
+  - name: "premium"
+    label: "Villes Premium"
+    folder: "src/content/premium"
+    create: true
+    slug: "{{slug}}"
+    fields:
+      - {label: "Nom de la ville", name: "title", widget: "string"}
+      - {label: "Description", name: "description", widget: "text"}
+      - {label: "Image", name: "image", widget: "image"}
+      - {label: "Contenu", name: "body", widget: "markdown"}
+      - label: "SEO"
+        name: "seo"
+        widget: "object"
+        fields:
+          - {label: "Meta Title", name: "metaTitle", widget: "string"}
+          - {label: "Meta Description", name: "metaDescription", widget: "text"}
+          - {label: "Métier", name: "profession", widget: "string"}
+
+  - name: "villes"
+    label: "Villes Standard"
+    folder: "src/content/villes"
+    create: true
+    slug: "{{slug}}"
+    fields:
+      - {label: "Nom de la ville", name: "title", widget: "string"}
+      - {label: "Description", name: "description", widget: "text"}
+      - {label: "Image", name: "image", widget: "image"}
+      - {label: "Contenu", name: "body", widget: "markdown"}
+      - label: "SEO"
+        name: "seo"
+        widget: "object"
+        fields:
+          - {label: "Meta Title", name: "metaTitle", widget: "string"}
+          - {label: "Meta Description", name: "metaDescription", widget: "text"}
+          - {label: "Métier", name: "profession", widget: "string"}
+
+  - name: "blog"
+    label: "Articles de Blog"
+    folder: "src/content/blog"
+    create: true
+    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
+    fields:
+      - {label: "Titre", name: "title", widget: "string"}
+      - {label: "Date de publication", name: "date", widget: "datetime"}
+      - {label: "Image à la une", name: "featuredImage", widget: "image"}
+      - {label: "Auteur", name: "author", widget: "string"}
+      - {label: "Extrait", name: "excerpt", widget: "text"}
+      - {label: "Contenu", name: "body", widget: "markdown"}
+      - label: "SEO"
+        name: "seo"
+        widget: "object"
+        fields:
+          - {label: "Meta Title", name: "metaTitle", widget: "string"}
+          - {label: "Meta Description", name: "metaDescription", widget: "text"}
