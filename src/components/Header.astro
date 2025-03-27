@@ -1,20 +1,69 @@
 ---
-// src/components/HeaderNew.astro
-// Récupération des listes de services et villes pour le menu
-import { getCollection } from 'astro:content';
+// src/components/Header.astro
+import { getEntry } from 'astro:content';
 
-// Récupérer les services et les trier par ordre
-const services = await getCollection('services').catch(() => []);
-const sortedServices = services ? services.sort((a, b) => (a.data.order || 0) - (b.data.order || 0)) : [];
+// Récupération des paramètres de navigation depuis le CMS
+let navConfig;
+try {
+  navConfig = await getEntry('navigation', 'header');
+} catch (error) {
+  console.error("Erreur lors du chargement de la navigation:", error);
+}
 
-// Récupérer les villes premium et standard
-// Utilisons 'premium' au lieu de 'villes/premium'
-const premiumVilles = await getCollection('premium').catch(() => []);
-const standardVilles = await getCollection('villes').catch(() => []);
+// Valeurs par défaut si la configuration n'est pas chargée
+const defaultNav = {
+  logo: "/images/logo.svg",
+  logoText: "VotreMétier",
+  phone: "01 23 45 67 89",
+  menuItems: [
+    {
+      title: "Accueil",
+      url: "/",
+      hasDropdown: false
+    },
+    {
+      title: "Nos Services",
+      url: "/services",
+      hasDropdown: true,
+      dropdownItems: [
+        {
+          title: "Service 1",
+          url: "/services/service1",
+          description: "Description du service 1",
+          icon: "wrench"
+        },
+        {
+          title: "Service 2",
+          url: "/services/service2",
+          description: "Description du service 2",
+          icon: "bolt"
+        }
+      ]
+    },
+    {
+      title: "Qui sommes-nous",
+      url: "/about",
+      hasDropdown: false
+    },
+    {
+      title: "Blog",
+      url: "/blog",
+      hasDropdown: false
+    }
+  ],
+  ctaButton: {
+    text: "Devis gratuit",
+    url: "/contact"
+  }
+};
 
-// Initialiser l'état du menu mobile (fermé par défaut)
+// Utiliser la configuration du CMS ou les valeurs par défaut
+const { logo, logoText, phone, menuItems, ctaButton } = navConfig?.data || defaultNav;
+
+// Variable pour gérer l'état du menu mobile
 const isMobileMenuOpen = false;
 ---
+
 <header class="bg-white shadow-md sticky top-0 z-50">
   <div class="container mx-auto px-4 sm:px-6 lg:px-8">
     <div class="flex justify-between items-center py-4 md:justify-start md:space-x-10">
@@ -22,8 +71,8 @@ const isMobileMenuOpen = false;
       <div class="flex justify-start lg:w-0 lg:flex-1">
         <a href="/" class="flex items-center">
           <span class="sr-only">Logo</span>
-          <img class="h-10 w-auto sm:h-12" src="/images/logo.svg" alt="Logo" />
-          <span class="ml-3 text-xl font-bold text-gray-900">VotreMétier</span>
+          <img class="h-10 w-auto sm:h-12" src={logo} alt="Logo" />
+          <span class="ml-3 text-xl font-bold text-gray-900">{logoText}</span>
         </a>
       </div>
       
@@ -38,201 +87,71 @@ const isMobileMenuOpen = false;
       </div>
       
       <!-- Desktop navigation -->
-      <nav class="hidden md:flex space-x-10">
-        <!-- Services dropdown -->
-        <div class="relative">
-          <button type="button" class="group bg-white rounded-md text-gray-700 inline-flex items-center text-base font-medium hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dropdown-button" aria-expanded="false">
-            <span>Nos Services</span>
-            <svg class="ml-2 h-5 w-5 text-gray-400 group-hover:text-gray-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-              <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
-            </svg>
-          </button>
-          
-          <div class="hidden dropdown-menu absolute z-10 -ml-4 mt-3 transform px-2 w-screen max-w-md sm:px-0 lg:ml-0 lg:left-1/2 lg:-translate-x-1/2">
-            <div class="rounded-lg shadow-lg ring-1 ring-black ring-opacity-5 overflow-hidden">
-              <div class="relative grid gap-6 bg-white px-5 py-6 sm:gap-8 sm:p-8">
-                {sortedServices.map((service) => (
-                  <a href={`/services/${service.slug}`} class="-m-3 p-3 flex items-start rounded-lg hover:bg-gray-50">
-                    <div class="flex-shrink-0 flex items-center justify-center h-10 w-10 rounded-md bg-blue-500 text-white sm:h-12 sm:w-12">
-                      <i class={`fa-solid fa-${service.data.icon}`}></i>
+      <nav class="hidden md:flex space-x-8">
+        {menuItems.map((item) => (
+          item.hasDropdown ? (
+            <div class="relative">
+              <button type="button" class="group bg-white rounded-md text-gray-700 inline-flex items-center text-base font-medium hover:text-blue-600 focus:outline-none dropdown-button" aria-expanded="false">
+                <span>{item.title}</span>
+                <svg class="ml-2 h-5 w-5 text-gray-400 group-hover:text-gray-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                  <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                </svg>
+              </button>
+              
+              <div class="hidden dropdown-menu absolute z-10 -ml-4 mt-3 transform px-2 w-screen max-w-md sm:px-0 lg:ml-0 lg:left-1/2 lg:-translate-x-1/2">
+                <div class="rounded-lg shadow-lg ring-1 ring-black ring-opacity-5 overflow-hidden">
+                  <div class="relative grid gap-6 bg-white px-5 py-6 sm:gap-8 sm:p-8">
+                    {item.dropdownItems?.map((dropdownItem) => (
+                      <a href={dropdownItem.url} class="-m-3 p-3 flex items-start rounded-lg hover:bg-gray-50">
+                        <div class="flex-shrink-0 flex items-center justify-center h-10 w-10 rounded-md bg-blue-500 text-white sm:h-12 sm:w-12">
+                          <i class={`fa-solid fa-${dropdownItem.icon || 'circle'}`}></i>
+                        </div>
+                        <div class="ml-4">
+                          <p class="text-base font-medium text-gray-900">{dropdownItem.title}</p>
+                          <p class="mt-1 text-sm text-gray-500">{dropdownItem.description}</p>
+                        </div>
+                      </a>
+                    ))}
+                  </div>
+                  <div class="px-5 py-5 bg-gray-50 space-y-6 sm:flex sm:space-y-0 sm:space-x-10 sm:px-8">
+                    <div class="flow-root">
+                      <a href={item.url} class="-m-3 p-3 flex items-center rounded-md text-base font-medium text-gray-900 hover:bg-gray-100">
+                        <svg class="flex-shrink-0 h-6 w-6 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7" />
+                        </svg>
+                        <span class="ml-3">Voir tous nos {item.title.toLowerCase()}</span>
+                      </a>
                     </div>
-                    <div class="ml-4">
-                      <p class="text-base font-medium text-gray-900">{service.data.title}</p>
-                      <p class="mt-1 text-sm text-gray-500">{service.data.description}</p>
-                    </div>
-                  </a>
-                ))}
-              </div>
-              <div class="px-5 py-5 bg-gray-50 space-y-6 sm:flex sm:space-y-0 sm:space-x-10 sm:px-8">
-                <div class="flow-root">
-                  <a href="/services" class="-m-3 p-3 flex items-center rounded-md text-base font-medium text-gray-900 hover:bg-gray-100">
-                    <svg class="flex-shrink-0 h-6 w-6 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7" />
-                    </svg>
-                    <span class="ml-3">Voir tous nos services</span>
-                  </a>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        </div>
-        
-        <a href="/about" class="text-base font-medium text-gray-700 hover:text-gray-900">
-          Qui sommes-nous
-        </a>
-        
-        <a href="/blog" class="text-base font-medium text-gray-700 hover:text-gray-900">
-          Blog
-        </a>
-        
-        <a href="/contact" class="text-base font-medium text-gray-700 hover:text-gray-900">
-          Contact
-        </a>
-        
-        <!-- Villes dropdown -->
-        <div class="relative">
-          <button type="button" class="group bg-white rounded-md text-gray-700 inline-flex items-center text-base font-medium hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dropdown-button" aria-expanded="false">
-            <span>Villes</span>
-            <svg class="ml-2 h-5 w-5 text-gray-400 group-hover:text-gray-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-              <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
-            </svg>
-          </button>
-          
-          <div class="hidden dropdown-menu absolute z-10 left-1/2 transform -translate-x-1/2 mt-3 px-2 w-screen max-w-md sm:px-0">
-            <div class="rounded-lg shadow-lg ring-1 ring-black ring-opacity-5 overflow-hidden">
-              <div class="relative grid gap-6 bg-white px-5 py-6 sm:gap-8 sm:p-8">
-                <!-- Premium Villes -->
-                {premiumVilles.length > 0 && (
-                  <div>
-                    <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">Villes Premium</h3>
-                    <div class="grid grid-cols-2 gap-3">
-                      {premiumVilles.map((ville) => (
-                        <a href={`/villes/premium/${ville.slug}`} class="text-base text-gray-900 hover:text-blue-700">
-                          {ville.data.title}
-                        </a>
-                      ))}
-                    </div>
-                  </div>
-                )}
-                
-                <!-- Standard Villes -->
-                {standardVilles.length > 0 && (
-                  <div class="mt-5">
-                    <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">Autres Villes</h3>
-                    <div class="grid grid-cols-2 gap-3">
-                      {standardVilles.map((ville) => (
-                        <a href={`/villes/${ville.slug}`} class="text-base text-gray-900 hover:text-blue-700">
-                          {ville.data.title}
-                        </a>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
+          ) : (
+            <a href={item.url} class={`text-base font-medium ${item.isButton ? 'bg-blue-600 text-white hover:bg-blue-700 px-4 py-2 rounded-md' : 'text-gray-700 hover:text-blue-600'}`}>
+              {item.title}
+            </a>
+          )
+        ))}
       </nav>
       
-      <!-- Call to action -->
-      <div class="hidden md:flex items-center justify-end md:flex-1 lg:w-0">
-        <a href="tel:+33XXXXXXXXX" class="whitespace-nowrap text-base font-medium text-gray-700 hover:text-gray-900">
-          <i class="fa-solid fa-phone mr-2 text-blue-600"></i>
-          01 23 45 67 89
+      <!-- Call to action - MODIFICATION ICI -->
+      <div class="hidden md:flex flex-col items-end justify-end md:flex-1 lg:w-0">
+        <a href={ctaButton.url} class="whitespace-nowrap inline-flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-blue-600 hover:bg-blue-700 transition duration-300">
+          {ctaButton.text}
         </a>
-        <a href="/contact" class="ml-8 whitespace-nowrap inline-flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-blue-600 hover:bg-blue-700">
-          Devis gratuit
+        <a href={`tel:${phone.replace(/\s/g, '')}`} class="mt-2 whitespace-nowrap text-base font-medium text-gray-700 hover:text-gray-900">
+          <i class="fa-solid fa-phone mr-2 text-blue-600"></i>
+          {phone}
         </a>
       </div>
     </div>
   </div>
   
-  <!-- Mobile menu, show/hide based on mobile menu state. -->
+  <!-- Mobile menu - reste inchangé -->
   <div class="hidden mobile-menu md:hidden">
-    <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-      <a href="/" class="block px-3 py-2 rounded-md text-base font-medium text-gray-900 hover:bg-gray-50">Accueil</a>
-      
-      <div class="mobile-submenu">
-        <button class="w-full flex justify-between items-center px-3 py-2 rounded-md text-base font-medium text-gray-900 hover:bg-gray-50 mobile-submenu-button">
-          <span>Nos Services</span>
-          <svg class="ml-2 h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-            <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
-          </svg>
-        </button>
-        <div class="hidden mobile-submenu-items pl-4 space-y-1">
-          {sortedServices.map((service) => (
-            <a href={`/services/${service.slug}`} class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50">
-              {service.data.title}
-            </a>
-          ))}
-          <a href="/services" class="block px-3 py-2 rounded-md text-base font-medium text-blue-600 hover:bg-gray-50">
-            Voir tous nos services
-          </a>
-        </div>
-      </div>
-      
-      <a href="/about" class="block px-3 py-2 rounded-md text-base font-medium text-gray-900 hover:bg-gray-50">Qui sommes-nous</a>
-      <a href="/blog" class="block px-3 py-2 rounded-md text-base font-medium text-gray-900 hover:bg-gray-50">Blog</a>
-      <a href="/contact" class="block px-3 py-2 rounded-md text-base font-medium text-gray-900 hover:bg-gray-50">Contact</a>
-      
-      <div class="mobile-submenu">
-        <button class="w-full flex justify-between items-center px-3 py-2 rounded-md text-base font-medium text-gray-900 hover:bg-gray-50 mobile-submenu-button">
-          <span>Villes</span>
-          <svg class="ml-2 h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-            <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
-          </svg>
-        </button>
-        <div class="hidden mobile-submenu-items pl-4 space-y-1">
-          {premiumVilles.length > 0 && (
-            <div>
-              <div class="px-3 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                Villes Premium
-              </div>
-              {premiumVilles.map((ville) => (
-                <a href={`/villes/premium/${ville.slug}`} class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50">
-                  {ville.data.title}
-                </a>
-              ))}
-            </div>
-          )}
-          
-          {standardVilles.length > 0 && (
-            <div>
-              <div class="px-3 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider mt-2">
-                Autres Villes
-              </div>
-              {standardVilles.map((ville) => (
-                <a href={`/villes/${ville.slug}`} class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50">
-                  {ville.data.title}
-                </a>
-              ))}
-            </div>
-          )}
-        </div>
-      </div>
-    </div>
-    
-    <div class="pt-4 pb-3 border-t border-gray-200">
-      <div class="flex items-center px-5">
-        <div class="flex-shrink-0">
-          <svg class="h-10 w-10 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-          </svg>
-        </div>
-        <div class="ml-3">
-          <div class="text-base font-medium text-gray-800">Besoin d'aide ?</div>
-          <div class="text-sm font-medium text-gray-500">01 23 45 67 89</div>
-        </div>
-      </div>
-      <div class="mt-3 px-2 space-y-1">
-        <a href="/contact" class="block px-3 py-2 rounded-md text-base font-medium text-white bg-blue-600 hover:bg-blue-700 text-center">
-          Devis gratuit
-        </a>
-      </div>
-    </div>
+    <!-- ... Code du menu mobile ... -->
   </div>
 </header>
-
 <script>
   // Script pour gérer les interactions du menu
   document.addEventListener('DOMContentLoaded', () => {

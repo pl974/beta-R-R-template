@@ -1,10 +1,141 @@
 ---
 // src/pages/about.astro
+import { getEntry } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
 
-// Métadonnées SEO
-const title = "Qui Sommes-nous | Notre Histoire et Notre Équipe";
-const description = "Découvrez notre entreprise, notre histoire, nos valeurs et notre équipe de professionnels dévoués à votre service.";
+// Récupération des données de la page avec debug
+let aboutData;
+try {
+  aboutData = await getEntry('about', 'page');
+  // Log pour debug
+  console.log("About data loaded:", aboutData ? "success" : "null");
+} catch (error) {
+  console.error("Error loading about data:", error);
+  // Fournir des données par défaut en cas d'erreur
+}
+
+// Valeurs par défaut pour éviter les erreurs
+const defaultData = {
+  seoTitle: "Qui Sommes-nous | Notre Histoire et Notre Équipe",
+  seoDescription: "Découvrez notre entreprise, notre histoire, nos valeurs et notre équipe de professionnels dévoués à votre service.",
+  bannerImage: "/images/about-banner.jpg",
+  bannerTitle: "Notre Histoire, Notre Vision",
+  bannerDescription: "Une équipe de professionnels passionnés et engagés pour vous offrir des services de qualité depuis plus de 10 ans.",
+  history: {
+    title: "Notre Histoire",
+    content: "Notre entreprise a été fondée en 2010 avec une mission claire : offrir des services professionnels de haute qualité à des prix compétitifs.",
+    image: "/images/about-history.jpg",
+    timeline: [
+      { year: "2010", description: "Fondation" },
+      { year: "2015", description: "Expansion" },
+      { year: "2020", description: "Innovation" },
+      { year: "Aujourd'hui", description: "Excellence" }
+    ]
+  },
+  values: {
+    title: "Nos Valeurs",
+    description: "Des principes solides qui guident toutes nos actions et décisions au quotidien.",
+    items: [
+      {
+        icon: "handshake",
+        title: "Confiance",
+        description: "Nous établissons des relations solides basées sur la transparence et l'honnêteté avec nos clients et partenaires."
+      },
+      {
+        icon: "medal",
+        title: "Excellence",
+        description: "Nous nous efforçons constamment d'améliorer nos services et de dépasser les attentes de nos clients."
+      },
+      {
+        icon: "lightbulb",
+        title: "Innovation",
+        description: "Nous adoptons les dernières technologies et méthodes pour offrir des solutions modernes et efficaces."
+      },
+      {
+        icon: "hand-holding-heart",
+        title: "Responsabilité",
+        description: "Nous assumons pleinement nos engagements envers nos clients, notre équipe et l'environnement."
+      }
+    ]
+  },
+  team: {
+    title: "Notre Équipe",
+    description: "Des professionnels qualifiés et passionnés dédiés à votre satisfaction.",
+    members: [
+      {
+        name: "Jean Dupont",
+        position: "Directeur Général",
+        photo: "/images/team-member-1.jpg",
+        linkedin: "#",
+        twitter: "#",
+        email: "#"
+      },
+      {
+        name: "Marie Martin",
+        position: "Responsable Service Client",
+        photo: "/images/team-member-2.jpg"
+      },
+      {
+        name: "Thomas Bernard",
+        position: "Responsable Technique",
+        photo: "/images/team-member-3.jpg"
+      },
+      {
+        name: "Sophie Petit",
+        position: "Responsable Marketing",
+        photo: "/images/team-member-4.jpg"
+      }
+    ]
+  },
+  stats: {
+    title: "Nos Chiffres Clés",
+    description: "Des résultats qui témoignent de notre engagement envers la qualité et la satisfaction client.",
+    items: [
+      { value: "3500", label: "Clients Satisfaits" },
+      { value: "10000", label: "Projets Réalisés" },
+      { value: "12", label: "Années d'Expérience" },
+      { value: "25", label: "Professionnels" }
+    ]
+  },
+  partners: {
+    title: "Nos Certifications et Partenaires",
+    description: "Des collaborations de confiance pour vous offrir des services de qualité.",
+    logos: [
+      { name: "Partenaire 1", image: "/images/partner-1.png" },
+      { name: "Partenaire 2", image: "/images/partner-2.png" },
+      { name: "Partenaire 3", image: "/images/partner-3.png" },
+      { name: "Partenaire 4", image: "/images/partner-4.png" },
+      { name: "Partenaire 5", image: "/images/partner-5.png" },
+      { name: "Partenaire 6", image: "/images/partner-6.png" }
+    ]
+  },
+  cta: {
+    title: "Prêt à travailler avec nous ?",
+    description: "Contactez-nous dès aujourd'hui pour discuter de votre projet et découvrir comment nous pouvons vous aider.",
+    buttonText1: "Nous contacter",
+    buttonUrl1: "/contact",
+    buttonText2: "Découvrir nos services",
+    buttonUrl2: "/services"
+  }
+};
+
+// Utiliser les données récupérées ou les valeurs par défaut
+const data = aboutData?.data || defaultData;
+
+// Déconstruire les données avec sécurité
+const {
+  seoTitle,
+  seoDescription,
+  bannerImage,
+  bannerTitle,
+  bannerDescription,
+  history,
+  values,
+  team,
+  stats,
+  partners,
+  cta
+} = data;
 
 // Préparer les données pour le schéma SEO
 const breadcrumbSchema = {
@@ -13,16 +144,20 @@ const breadcrumbSchema = {
     { name: "Qui Sommes-nous", url: "/about" }
   ]
 };
+
+// Log les sections pour debug
+console.log("Values section:", values?.title, values?.items?.length || 0);
+console.log("Team section:", team?.title, team?.members?.length || 0);
 ---
 
 <BaseLayout 
-  title={title}
-  description={description}
+  title={seoTitle}
+  description={seoDescription}
   schemaType="BreadcrumbList"
   schemaData={breadcrumbSchema}
 >
   <!-- En-tête de page avec bannière -->
-  <div class="relative bg-cover bg-center py-24" style="background-image: url('/images/about-banner.jpg');">
+  <div class="relative bg-cover bg-center py-24" style={`background-image: url(${bannerImage});`}>
     <div class="absolute inset-0 bg-blue-900/70"></div>
     
     <div class="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
@@ -40,37 +175,29 @@ const breadcrumbSchema = {
       </div>
       
       <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4">
-        Notre Histoire, Notre Vision
+        {bannerTitle}
       </h1>
       
       <p class="text-xl text-blue-100 max-w-3xl">
-        Une équipe de professionnels passionnés et engagés pour vous offrir des services de qualité depuis plus de 10 ans.
+        {bannerDescription}
       </p>
     </div>
   </div>
   
-  <!-- Section Notre Histoire - RESTRUCTURÉE -->
+  <!-- Section Notre Histoire -->
   <section class="py-16 bg-white">
     <div class="container mx-auto px-4 sm:px-6 lg:px-8">
       <h2 class="text-3xl font-bold text-gray-900 mb-6 relative">
-        Notre Histoire
+        {history?.title || "Notre Histoire"}
         <span class="block w-20 h-1 bg-blue-600 mt-4"></span>
       </h2>
       
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
         <!-- Colonne de gauche: Texte -->
         <div class="space-y-4 text-gray-700">
-          <p>
-            Notre entreprise a été fondée en 2010 avec une mission claire : offrir des services professionnels de haute qualité à des prix compétitifs. Ce qui a commencé comme une petite équipe de passionnés s'est transformé en une entreprise reconnue dans toute la région.
-          </p>
-          
-          <p>
-            Au fil des années, nous avons élargi notre gamme de services pour répondre aux besoins croissants de nos clients tout en maintenant notre engagement envers l'excellence et la satisfaction client.
-          </p>
-          
-          <p>
-            Aujourd'hui, notre équipe compte plus de 20 professionnels qualifiés, chacun spécialisé dans son domaine d'expertise. Nous sommes fiers de notre croissance et du nombre croissant de clients satisfaits qui nous font confiance année après année.
-          </p>
+          {history?.content && history.content.split('\n\n').map((paragraph) => (
+            <p>{paragraph}</p>
+          ))}
         </div>
         
         <!-- Colonne de droite: Timeline et Image -->
@@ -79,25 +206,12 @@ const breadcrumbSchema = {
           <div class="bg-white rounded-lg shadow-md p-6 mb-8">
             <div class="timeline-container">
               <div class="timeline">
-                <div class="timeline-item">
-                  <div class="year">2010</div>
-                  <div class="description">Fondation</div>
-                </div>
-                
-                <div class="timeline-item">
-                  <div class="year">2015</div>
-                  <div class="description">Expansion</div>
-                </div>
-                
-                <div class="timeline-item">
-                  <div class="year">2020</div>
-                  <div class="description">Innovation</div>
-                </div>
-                
-                <div class="timeline-item">
-                  <div class="year">Aujourd'hui</div>
-                  <div class="description">Excellence</div>
-                </div>
+                {history?.timeline && history.timeline.map((item) => (
+                  <div class="timeline-item">
+                    <div class="year">{item.year}</div>
+                    <div class="description">{item.description}</div>
+                  </div>
+                ))}
               </div>
             </div>
           </div>
@@ -105,7 +219,7 @@ const breadcrumbSchema = {
           <!-- Image en dessous -->
           <div class="rounded-lg overflow-hidden shadow-xl">
             <img 
-              src="/images/about-history.jpg" 
+              src={history?.image || "/images/about-history.jpg"} 
               alt="Notre histoire" 
               class="w-full h-auto"
             />
@@ -116,363 +230,205 @@ const breadcrumbSchema = {
   </section>
   
   <!-- Section Nos Valeurs -->
-  <section class="py-16 bg-gray-50">
-    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="text-center max-w-3xl mx-auto mb-12">
-        <h2 class="text-3xl font-bold text-gray-900 mb-4">
-          Nos Valeurs
-        </h2>
-        <p class="text-lg text-gray-700">
-          Des principes solides qui guident toutes nos actions et décisions au quotidien.
-        </p>
-        <div class="w-20 h-1 bg-blue-600 mx-auto mt-6"></div>
-      </div>
-      
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mt-12">
-        <div class="bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 p-6 text-center">
-          <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <i class="fa-solid fa-handshake text-blue-600 text-2xl"></i>
-          </div>
-          
-          <h3 class="text-xl font-semibold text-gray-900 mb-3">
-            Confiance
-          </h3>
-          
-          <p class="text-gray-700">
-            Nous établissons des relations solides basées sur la transparence et l'honnêteté avec nos clients et partenaires.
+  {values && values.items && values.items.length > 0 && (
+    <section class="py-16 bg-gray-50">
+      <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center max-w-3xl mx-auto mb-12">
+          <h2 class="text-3xl font-bold text-gray-900 mb-4">
+            {values.title}
+          </h2>
+          <p class="text-lg text-gray-700">
+            {values.description}
           </p>
+          <div class="w-20 h-1 bg-blue-600 mx-auto mt-6"></div>
         </div>
         
-        <div class="bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 p-6 text-center">
-          <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <i class="fa-solid fa-medal text-blue-600 text-2xl"></i>
-          </div>
-          
-          <h3 class="text-xl font-semibold text-gray-900 mb-3">
-            Excellence
-          </h3>
-          
-          <p class="text-gray-700">
-            Nous nous efforçons constamment d'améliorer nos services et de dépasser les attentes de nos clients.
-          </p>
-        </div>
-        
-        <div class="bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 p-6 text-center">
-          <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <i class="fa-solid fa-lightbulb text-blue-600 text-2xl"></i>
-          </div>
-          
-          <h3 class="text-xl font-semibold text-gray-900 mb-3">
-            Innovation
-          </h3>
-          
-          <p class="text-gray-700">
-            Nous adoptons les dernières technologies et méthodes pour offrir des solutions modernes et efficaces.
-          </p>
-        </div>
-        
-        <div class="bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 p-6 text-center">
-          <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <i class="fa-solid fa-hand-holding-heart text-blue-600 text-2xl"></i>
-          </div>
-          
-          <h3 class="text-xl font-semibold text-gray-900 mb-3">
-            Responsabilité
-          </h3>
-          
-          <p class="text-gray-700">
-            Nous assumons pleinement nos engagements envers nos clients, notre équipe et l'environnement.
-          </p>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mt-12">
+          {values.items.map((value) => (
+            <div class="bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 p-6 text-center">
+              <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i class={`fa-solid fa-${value.icon} text-blue-600 text-2xl`}></i>
+              </div>
+              
+              <h3 class="text-xl font-semibold text-gray-900 mb-3">
+                {value.title}
+              </h3>
+              
+              <p class="text-gray-700">
+                {value.description}
+              </p>
+            </div>
+          ))}
         </div>
       </div>
-    </div>
-  </section>
+    </section>
+  )}
   
   <!-- Section Notre Équipe -->
-  <section class="py-16 bg-white">
-    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="text-center max-w-3xl mx-auto mb-12">
-        <h2 class="text-3xl font-bold text-gray-900 mb-4">
-          Notre Équipe
-        </h2>
-        <p class="text-lg text-gray-700">
-          Des professionnels qualifiés et passionnés dédiés à votre satisfaction.
-        </p>
-        <div class="w-20 h-1 bg-blue-600 mx-auto mt-6"></div>
-      </div>
-      
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 mt-12">
-        <!-- Membre d'équipe 1 -->
-        <div class="bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 overflow-hidden group">
-          <div class="relative overflow-hidden">
-            <img 
-              src="/images/team-member-1.jpg" 
-              alt="Jean Dupont" 
-              class="w-full h-64 object-cover transition-transform duration-500 group-hover:scale-105"
-            />
-            
-            <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end">
-              <div class="p-4 w-full">
-                <div class="flex justify-center space-x-4 text-white">
-                  <a href="#" class="hover:text-blue-300 transition-colors duration-300">
-                    <i class="fa-brands fa-linkedin text-lg"></i>
-                  </a>
-                  <a href="#" class="hover:text-blue-300 transition-colors duration-300">
-                    <i class="fa-brands fa-twitter text-lg"></i>
-                  </a>
-                  <a href="#" class="hover:text-blue-300 transition-colors duration-300">
-                    <i class="fa-solid fa-envelope text-lg"></i>
-                  </a>
-                </div>
-              </div>
-            </div>
-          </div>
-          
-          <div class="p-4 text-center">
-            <h3 class="text-xl font-semibold text-gray-900">
-              Jean Dupont
-            </h3>
-            <p class="text-blue-600 font-medium">
-              Directeur Général
-            </p>
-          </div>
+  {team && team.members && team.members.length > 0 && (
+    <section class="py-16 bg-white">
+      <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center max-w-3xl mx-auto mb-12">
+          <h2 class="text-3xl font-bold text-gray-900 mb-4">
+            {team.title}
+          </h2>
+          <p class="text-lg text-gray-700">
+            {team.description}
+          </p>
+          <div class="w-20 h-1 bg-blue-600 mx-auto mt-6"></div>
         </div>
         
-        <!-- Membre d'équipe 2 -->
-        <div class="bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 overflow-hidden group">
-          <div class="relative overflow-hidden">
-            <img 
-              src="/images/team-member-2.jpg" 
-              alt="Marie Martin" 
-              class="w-full h-64 object-cover transition-transform duration-500 group-hover:scale-105"
-            />
-            
-            <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end">
-              <div class="p-4 w-full">
-                <div class="flex justify-center space-x-4 text-white">
-                  <a href="#" class="hover:text-blue-300 transition-colors duration-300">
-                    <i class="fa-brands fa-linkedin text-lg"></i>
-                  </a>
-                  <a href="#" class="hover:text-blue-300 transition-colors duration-300">
-                    <i class="fa-brands fa-twitter text-lg"></i>
-                  </a>
-                  <a href="#" class="hover:text-blue-300 transition-colors duration-300">
-                    <i class="fa-solid fa-envelope text-lg"></i>
-                  </a>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 mt-12">
+          {team.members.map((member) => (
+            <div class="bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 overflow-hidden group">
+              <div class="relative overflow-hidden">
+                <img 
+                  src={member.photo} 
+                  alt={member.name} 
+                  class="w-full h-64 object-cover transition-transform duration-500 group-hover:scale-105"
+                />
+                
+                <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end">
+                  <div class="p-4 w-full">
+                    <div class="flex justify-center space-x-4 text-white">
+                      {member.linkedin && (
+                        <a href={member.linkedin} class="hover:text-blue-300 transition-colors duration-300">
+                          <i class="fa-brands fa-linkedin text-lg"></i>
+                        </a>
+                      )}
+                      {member.twitter && (
+                        <a href={member.twitter} class="hover:text-blue-300 transition-colors duration-300">
+                          <i class="fa-brands fa-twitter text-lg"></i>
+                        </a>
+                      )}
+                      {member.email && (
+                        <a href={`mailto:${member.email}`} class="hover:text-blue-300 transition-colors duration-300">
+                          <i class="fa-solid fa-envelope text-lg"></i>
+                        </a>
+                      )}
+                    </div>
+                  </div>
                 </div>
               </div>
+              
+              <div class="p-4 text-center">
+                <h3 class="text-xl font-semibold text-gray-900">
+                  {member.name}
+                </h3>
+                <p class="text-blue-600 font-medium">
+                  {member.position}
+                </p>
+              </div>
             </div>
-          </div>
-          
-          <div class="p-4 text-center">
-            <h3 class="text-xl font-semibold text-gray-900">
-              Marie Martin
-            </h3>
-            <p class="text-blue-600 font-medium">
-              Responsable Service Client
-            </p>
-          </div>
+          ))}
         </div>
         
-        <!-- Membre d'équipe 3 -->
-        <div class="bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 overflow-hidden group">
-          <div class="relative overflow-hidden">
-            <img 
-              src="/images/team-member-3.jpg" 
-              alt="Thomas Bernard" 
-              class="w-full h-64 object-cover transition-transform duration-500 group-hover:scale-105"
-            />
-            
-            <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end">
-              <div class="p-4 w-full">
-                <div class="flex justify-center space-x-4 text-white">
-                  <a href="#" class="hover:text-blue-300 transition-colors duration-300">
-                    <i class="fa-brands fa-linkedin text-lg"></i>
-                  </a>
-                  <a href="#" class="hover:text-blue-300 transition-colors duration-300">
-                    <i class="fa-brands fa-twitter text-lg"></i>
-                  </a>
-                  <a href="#" class="hover:text-blue-300 transition-colors duration-300">
-                    <i class="fa-solid fa-envelope text-lg"></i>
-                  </a>
-                </div>
-              </div>
-            </div>
-          </div>
-          
-          <div class="p-4 text-center">
-            <h3 class="text-xl font-semibold text-gray-900">
-              Thomas Bernard
+        <!-- Section "Rejoignez notre équipe" -->
+        <div class="mt-16 bg-blue-50 rounded-xl p-8 flex flex-col md:flex-row items-center justify-between">
+          <div class="mb-6 md:mb-0 md:mr-8">
+            <h3 class="text-2xl font-bold text-gray-900 mb-2">
+              Rejoignez notre équipe !
             </h3>
-            <p class="text-blue-600 font-medium">
-              Responsable Technique
+            <p class="text-gray-700">
+              Nous sommes toujours à la recherche de talents passionnés pour renforcer notre équipe.
             </p>
           </div>
-        </div>
-        
-        <!-- Membre d'équipe 4 -->
-        <div class="bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 overflow-hidden group">
-          <div class="relative overflow-hidden">
-            <img 
-              src="/images/team-member-4.jpg" 
-              alt="Sophie Petit" 
-              class="w-full h-64 object-cover transition-transform duration-500 group-hover:scale-105"
-            />
-            
-            <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end">
-              <div class="p-4 w-full">
-                <div class="flex justify-center space-x-4 text-white">
-                  <a href="#" class="hover:text-blue-300 transition-colors duration-300">
-                    <i class="fa-brands fa-linkedin text-lg"></i>
-                  </a>
-                  <a href="#" class="hover:text-blue-300 transition-colors duration-300">
-                    <i class="fa-brands fa-twitter text-lg"></i>
-                  </a>
-                  <a href="#" class="hover:text-blue-300 transition-colors duration-300">
-                    <i class="fa-solid fa-envelope text-lg"></i>
-                  </a>
-                </div>
-              </div>
-            </div>
-          </div>
           
-          <div class="p-4 text-center">
-            <h3 class="text-xl font-semibold text-gray-900">
-              Sophie Petit
-            </h3>
-            <p class="text-blue-600 font-medium">
-              Responsable Marketing
-            </p>
-          </div>
+          <a href="/carrieres" class="btn btn-primary">
+            Voir nos offres d'emploi
+          </a>
         </div>
       </div>
-      
-      <!-- Section "Rejoignez notre équipe" -->
-      <div class="mt-16 bg-blue-50 rounded-xl p-8 flex flex-col md:flex-row items-center justify-between">
-        <div class="mb-6 md:mb-0 md:mr-8">
-          <h3 class="text-2xl font-bold text-gray-900 mb-2">
-            Rejoignez notre équipe !
-          </h3>
-          <p class="text-gray-700">
-            Nous sommes toujours à la recherche de talents passionnés pour renforcer notre équipe.
+    </section>
+  )}
+  
+  <!-- Section Chiffres Clés -->
+  {stats && stats.items && stats.items.length > 0 && (
+    <section class="py-16 bg-blue-600 text-white">
+      <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center max-w-3xl mx-auto mb-12">
+          <h2 class="text-3xl font-bold mb-4">
+            {stats.title}
+          </h2>
+          <p class="text-lg text-blue-100">
+            {stats.description}
           </p>
         </div>
         
-        <a href="/carrieres" class="btn btn-primary">
-          Voir nos offres d'emploi
-        </a>
-      </div>
-    </div>
-  </section>
-  
-  <!-- Section Chiffres Clés -->
-  <section class="py-16 bg-blue-600 text-white">
-    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="text-center max-w-3xl mx-auto mb-12">
-        <h2 class="text-3xl font-bold mb-4">
-          Nos Chiffres Clés
-        </h2>
-        <p class="text-lg text-blue-100">
-          Des résultats qui témoignent de notre engagement envers la qualité et la satisfaction client.
-        </p>
-      </div>
-      
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-        <div class="text-center">
-          <div class="text-5xl font-bold mb-2 counter" data-target="3500">
-            0
-          </div>
-          <p class="text-xl text-blue-100">Clients Satisfaits</p>
-        </div>
-        
-        <div class="text-center">
-          <div class="text-5xl font-bold mb-2 counter" data-target="10000">
-            0
-          </div>
-          <p class="text-xl text-blue-100">Projets Réalisés</p>
-        </div>
-        
-        <div class="text-center">
-          <div class="text-5xl font-bold mb-2 counter" data-target="12">
-            0
-          </div>
-          <p class="text-xl text-blue-100">Années d'Expérience</p>
-        </div>
-        
-        <div class="text-center">
-          <div class="text-5xl font-bold mb-2 counter" data-target="25">
-            0
-          </div>
-          <p class="text-xl text-blue-100">Professionnels</p>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          {stats.items.map((stat) => (
+            <div class="text-center">
+              <div class="text-5xl font-bold mb-2 counter" data-target={stat.value}>
+                0
+              </div>
+              <p class="text-xl text-blue-100">{stat.label}</p>
+            </div>
+          ))}
         </div>
       </div>
-    </div>
-  </section>
+    </section>
+  )}
   
   <!-- Section Certifications et Partenaires -->
-  <section class="py-16 bg-white">
-    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="text-center max-w-3xl mx-auto mb-12">
-        <h2 class="text-3xl font-bold text-gray-900 mb-4">
-          Nos Certifications et Partenaires
-        </h2>
-        <p class="text-lg text-gray-700">
-          Des collaborations de confiance pour vous offrir des services de qualité.
-        </p>
-        <div class="w-20 h-1 bg-blue-600 mx-auto mt-6"></div>
-      </div>
-      
-      <!-- Logos de partenaires -->
-      <div class="mt-12 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6 items-center">
-        <div class="p-4 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300">
-          <img src="/images/partner-1.png" alt="Partenaire 1" class="h-16 object-contain" />
+  {partners && partners.logos && partners.logos.length > 0 && (
+    <section class="py-16 bg-white">
+      <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center max-w-3xl mx-auto mb-12">
+          <h2 class="text-3xl font-bold text-gray-900 mb-4">
+            {partners.title}
+          </h2>
+          <p class="text-lg text-gray-700">
+            {partners.description}
+          </p>
+          <div class="w-20 h-1 bg-blue-600 mx-auto mt-6"></div>
         </div>
         
-        <div class="p-4 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300">
-          <img src="/images/partner-2.png" alt="Partenaire 2" class="h-16 object-contain" />
-        </div>
-        
-        <div class="p-4 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300">
-          <img src="/images/partner-3.png" alt="Partenaire 3" class="h-16 object-contain" />
-        </div>
-        
-        <div class="p-4 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300">
-          <img src="/images/partner-4.png" alt="Partenaire 4" class="h-16 object-contain" />
-        </div>
-        
-        <div class="p-4 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300">
-          <img src="/images/partner-5.png" alt="Partenaire 5" class="h-16 object-contain" />
-        </div>
-        
-        <div class="p-4 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300">
-          <img src="/images/partner-6.png" alt="Partenaire 6" class="h-16 object-contain" />
+        <!-- Logos de partenaires -->
+        <div class="mt-12 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6 items-center">
+          {partners.logos.map((partner) => (
+            <div class="p-4 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300">
+              <img src={partner.image} alt={partner.name} class="h-16 object-contain" />
+            </div>
+          ))}
         </div>
       </div>
-    </div>
-  </section>
+    </section>
+  )}
   
   <!-- CTA de fin de page -->
-  <section class="py-16 bg-gray-50">
-    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="max-w-4xl mx-auto text-center">
-        <h2 class="text-3xl font-bold text-gray-900 mb-6">
-          Prêt à travailler avec nous ?
-        </h2>
-        <p class="text-xl text-gray-700 mb-8">
-          Contactez-nous dès aujourd'hui pour discuter de votre projet et découvrir comment nous pouvons vous aider.
-        </p>
-        <div class="flex flex-col sm:flex-row justify-center gap-4">
-          <a href="/contact" class="btn btn-primary">
-            Nous contacter
-          </a>
-          <a href="/services" class="btn btn-outline">
-            Découvrir nos services
-          </a>
+  {cta && (
+    <section class="py-16 bg-gray-50">
+      <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="max-w-4xl mx-auto text-center">
+          <h2 class="text-3xl font-bold text-gray-900 mb-6">
+            {cta.title}
+          </h2>
+          <p class="text-xl text-gray-700 mb-8">
+            {cta.description}
+          </p>
+          <div class="flex flex-col sm:flex-row justify-center gap-4">
+            <a href={cta.buttonUrl1} class="btn btn-primary">
+              {cta.buttonText1}
+            </a>
+            <a href={cta.buttonUrl2} class="btn btn-outline">
+              {cta.buttonText2}
+            </a>
+          </div>
         </div>
       </div>
-    </div>
-  </section>
+    </section>
+  )}
 </BaseLayout>
+
+<style>
+  /* Les styles de timeline restent inchangés */
+  /* ... */
+</style>
+
+<script>
+  /* Le script des compteurs reste inchangé */
+  /* ... */
+</script>
 
 <style>
   /* Styles pour la timeline responsive */

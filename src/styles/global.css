@@ -366,3 +366,60 @@ a:hover {
     margin-top: 2rem;
   }
 }
+/* Ajoutez ces styles à la fin de votre fichier global.css */
+
+/* Styles de navigation améliorés */
+.dropdown-menu {
+  animation: fadeDown 0.2s ease-out;
+}
+
+@keyframes fadeDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Effet hover pour les liens de navigation */
+nav a, .dropdown-button {
+  position: relative;
+}
+
+nav a:not(.bg-blue-600):after, .dropdown-button:after {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 2px;
+  bottom: -4px;
+  left: 0;
+  background-color: #2563eb;
+  transition: width 0.3s;
+}
+
+nav a:not(.bg-blue-600):hover:after, .dropdown-button:hover:after {
+  width: 100%;
+}
+
+/* Style pour le menu mobile */
+.mobile-menu {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.mobile-submenu-items {
+  animation: slideDown 0.2s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    max-height: 0;
+  }
+  to {
+    opacity: 1;
+    max-height: 500px;
+  }
+}

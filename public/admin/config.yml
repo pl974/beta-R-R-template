@@ -202,3 +202,130 @@ collections:
         fields:
           - {label: "Meta Title", name: "metaTitle", widget: "string"}
           - {label: "Meta Description", name: "metaDescription", widget: "text"}
+- name: "about"
+    label: "Page À propos"
+    files:
+      - file: "src/content/about/page.md"
+        label: "Page À propos"
+        name: "page"
+        fields:
+          - {label: "SEO - Titre", name: "seoTitle", widget: "string"}
+          - {label: "SEO - Description", name: "seoDescription", widget: "text"}
+          - {label: "Bannière - Image", name: "bannerImage", widget: "image"}
+          - {label: "Bannière - Titre", name: "bannerTitle", widget: "string"}
+          - {label: "Bannière - Description", name: "bannerDescription", widget: "text"}
+          
+          - label: "Section Histoire"
+            name: "history"
+            widget: "object"
+            fields:
+              - {label: "Titre", name: "title", widget: "string"}
+              - {label: "Contenu", name: "content", widget: "markdown"}
+              - {label: "Image", name: "image", widget: "image"}
+              - label: "Timeline"
+                name: "timeline"
+                widget: "list"
+                fields:
+                  - {label: "Année", name: "year", widget: "string"}
+                  - {label: "Description", name: "description", widget: "string"}
+          
+          - label: "Section Valeurs"
+            name: "values"
+            widget: "object"
+            fields:
+              - {label: "Titre", name: "title", widget: "string"}
+              - {label: "Description", name: "description", widget: "text"}
+              - label: "Valeurs"
+                name: "items"
+                widget: "list"
+                fields:
+                  - {label: "Icône", name: "icon", widget: "string", hint: "Nom de l'icône Font Awesome (ex: handshake)"}
+                  - {label: "Titre", name: "title", widget: "string"}
+                  - {label: "Description", name: "description", widget: "text"}
+          
+          - label: "Section Équipe"
+            name: "team"
+            widget: "object"
+            fields:
+              - {label: "Titre", name: "title", widget: "string"}
+              - {label: "Description", name: "description", widget: "text"}
+              - label: "Membres"
+                name: "members"
+                widget: "list"
+                fields:
+                  - {label: "Nom", name: "name", widget: "string"}
+                  - {label: "Poste", name: "position", widget: "string"}
+                  - {label: "Photo", name: "photo", widget: "image"}
+                  - {label: "LinkedIn", name: "linkedin", widget: "string", required: false}
+                  - {label: "Twitter", name: "twitter", widget: "string", required: false}
+                  - {label: "Email", name: "email", widget: "string", required: false}
+
+          - label: "Section Chiffres"
+            name: "stats"
+            widget: "object"
+            fields:
+              - {label: "Titre", name: "title", widget: "string"}
+              - {label: "Description", name: "description", widget: "text"}
+              - label: "Chiffres"
+                name: "items"
+                widget: "list"
+                fields:
+                  - {label: "Valeur", name: "value", widget: "string"}
+                  - {label: "Libellé", name: "label", widget: "string"}
+
+          - label: "Section Partenaires"
+            name: "partners"
+            widget: "object"
+            fields:
+              - {label: "Titre", name: "title", widget: "string"}
+              - {label: "Description", name: "description", widget: "text"}
+              - label: "Logos"
+                name: "logos"
+                widget: "list"
+                fields:
+                  - {label: "Nom", name: "name", widget: "string"}
+                  - {label: "Logo", name: "image", widget: "image"}
+
+          - label: "Section CTA"
+            name: "cta"
+            widget: "object"
+            fields:
+              - {label: "Titre", name: "title", widget: "string"}
+              - {label: "Description", name: "description", widget: "text"}
+              - {label: "Texte du bouton 1", name: "buttonText1", widget: "string"}
+              - {label: "URL du bouton 1", name: "buttonUrl1", widget: "string"}
+              - {label: "Texte du bouton 2", name: "buttonText2", widget: "string"}
+              - {label: "URL du bouton 2", name: "buttonUrl2", widget: "string"}
+- name: "navigation"
+    label: "Navigation"
+    files:
+      - file: "src/content/navigation/header.md"
+        label: "Menu Principal"
+        name: "header"
+        fields:
+          - {label: "Logo (image)", name: "logo", widget: "image", default: "/images/logo.svg"}
+          - {label: "Texte du logo", name: "logoText", widget: "string", default: "VotreMétier"}
+          - {label: "Numéro de téléphone", name: "phone", widget: "string", default: "01 23 45 67 89"}
+          - label: "Éléments du menu"
+            name: "menuItems"
+            widget: "list"
+            fields:
+              - {label: "Titre", name: "title", widget: "string"}
+              - {label: "URL", name: "url", widget: "string"}
+              - {label: "A un sous-menu", name: "hasDropdown", widget: "boolean", default: false}
+              - {label: "Est un bouton", name: "isButton", widget: "boolean", default: false}
+              - label: "Éléments du sous-menu"
+                name: "dropdownItems"
+                widget: "list"
+                required: false
+                fields:
+                  - {label: "Titre", name: "title", widget: "string"}
+                  - {label: "URL", name: "url", widget: "string"}
+                  - {label: "Description", name: "description", widget: "string", required: false}
+                  - {label: "Icône", name: "icon", widget: "string", required: false, hint: "Nom de l'icône Font Awesome (ex: wrench)"}
+          - label: "Bouton d'action"
+            name: "ctaButton"
+            widget: "object"
+            fields:
+              - {label: "Texte", name: "text", widget: "string", default: "Devis gratuit"}
+              - {label: "URL", name: "url", widget: "string", default: "/contact"}

@@ -130,6 +130,104 @@ const homepageCollection = defineCollection({
   }),
 });
 
+// Schéma pour la page À propos
+const aboutCollection = defineCollection({
+  type: 'content',
+  schema: z.object({
+    seoTitle: z.string(),
+    seoDescription: z.string(),
+    bannerImage: z.string(),
+    bannerTitle: z.string(),
+    bannerDescription: z.string(),
+    history: z.object({
+      title: z.string(),
+      content: z.string(),
+      image: z.string(),
+      timeline: z.array(z.object({
+        year: z.string(),
+        description: z.string()
+      }))
+    }),
+    values: z.object({
+      title: z.string(),
+      description: z.string(),
+      items: z.array(z.object({
+        icon: z.string(),
+        title: z.string(),
+        description: z.string()
+      }))
+    }),
+    team: z.object({
+      title: z.string(),
+      description: z.string(),
+      members: z.array(z.object({
+        name: z.string(),
+        position: z.string(),
+        photo: z.string(),
+        linkedin: z.string().optional(),
+        twitter: z.string().optional(),
+        email: z.string().optional()
+      }))
+    }),
+    stats: z.object({
+      title: z.string(),
+      description: z.string(),
+      items: z.array(z.object({
+        value: z.string(),
+        label: z.string()
+      }))
+    }),
+    partners: z.object({
+      title: z.string(),
+      description: z.string(),
+      logos: z.array(z.object({
+        name: z.string(),
+        image: z.string()
+      }))
+    }),
+    cta: z.object({
+      title: z.string(),
+      description: z.string(),
+      buttonText1: z.string(),
+      buttonUrl1: z.string(),
+      buttonText2: z.string(),
+      buttonUrl2: z.string()
+    })
+  })
+});
+
+// Schéma pour la navigation
+const navigationCollection = defineCollection({
+  type: 'content',
+  schema: z.object({
+    logo: z.string(),
+    logoText: z.string(),
+    phone: z.string(),
+    menuItems: z.array(
+      z.object({
+        title: z.string(),
+        url: z.string(),
+        hasDropdown: z.boolean().optional().default(false),
+        isButton: z.boolean().optional().default(false),
+        dropdownItems: z
+          .array(
+            z.object({
+              title: z.string(),
+              url: z.string(),
+              description: z.string().optional(),
+              icon: z.string().optional(),
+            })
+          )
+          .optional(),
+      })
+    ),
+    ctaButton: z.object({
+      text: z.string(),
+      url: z.string(),
+    }),
+  }),
+});
+
 // Exporter les collections
 export const collections = {
   services: servicesCollection,
@@ -137,4 +235,6 @@ export const collections = {
   premium: villesCollection,
   blog: blogCollection,
   homepage: homepageCollection,
+  about: aboutCollection,
+  navigation: navigationCollection,
 };
